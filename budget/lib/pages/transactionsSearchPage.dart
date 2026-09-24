@@ -17,6 +17,7 @@ import 'package:budget/widgets/transactionEntries.dart';
 import 'package:budget/widgets/transactionEntry/transactionEntry.dart';
 import 'package:budget/widgets/util/debouncer.dart';
 import 'package:budget/widgets/util/showDatePicker.dart';
+import 'package:budget/widgets/selectChips.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:budget/colors.dart';
@@ -25,6 +26,8 @@ import 'package:budget/widgets/framework/popupFramework.dart';
 int roundToNearestNextFifthYear(int year) {
   return (((year + 5) / 5).ceil()) * 5;
 }
+
+enum QuickDateRange { today, week, month }
 
 class TransactionsSearchPage extends StatefulWidget {
   const TransactionsSearchPage({this.initialFilters, Key? key})
@@ -128,6 +131,36 @@ class TransactionsSearchPageState extends State<TransactionsSearchPage>
     updateSettings("searchTransactionsSetFiltersString", null,
         updateGlobalState: false);
     setState(() {});
+  }
+
+  DateTimeRange quickDateRange(QuickDateRange range) {
+    DateTime now = DateTime.now();
+    DateTime start;
+    DateTime end = DateTime(now.year, now.month, now.day, 23, 59, 59, 999);
+
+    if (range == QuickDateRange.today) {
+      start = DateTime(now.year, now.month, now.day);
+    } else if (range == QuickDateRange.week) {
+      start = DateTime(now.year, now.month, now.day)
+          .subtract(Duration(days: now.weekday - 1));
+    } else {
+      start = DateTime(now.year, now.month, 1);
+      end = DateTime(now.year, now.month + 1, 1)
+          .subtract(Duration(microseconds: 1));
+    }
+
+    return DateTimeRange(start: start, end: end);
+  }
+
+  void setQuickDateRange(QuickDateRange range) {
+    setState(() {
+      searchFilters.dateTimeRange = quickDateRange(range);
+    });
+    updateSettings(
+      "searchTransactionsSetFiltersString",
+      searchFilters.getFilterString(),
+      updateGlobalState: false,
+    );
   }
 
   Future<void> selectDateRange(BuildContext context) async {
@@ -287,6 +320,30 @@ class TransactionsSearchPageState extends State<TransactionsSearchPage>
           ),
           SliverToBoxAdapter(
             child: SizedBox(height: 13),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsetsDirectional.symmetric(
+                  horizontal: getHorizontalPaddingConstrained(context)),
+              child: SelectChips<QuickDateRange>(
+                items: QuickDateRange.values,
+                getLabel: (QuickDateRange range) {
+                  if (range == QuickDateRange.today) return "today".tr();
+                  if (range == QuickDateRange.week) return "week".tr();
+                  return "month".tr();
+                },
+                getSelected: (QuickDateRange range) {
+                  DateTimeRange selectedRange = quickDateRange(range);
+                  return searchFilters.dateTimeRange?.start ==
+                          selectedRange.start &&
+                      searchFilters.dateTimeRange?.end == selectedRange.end;
+                },
+                onSelected: setQuickDateRange,
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: SizedBox(height: 5),
           ),
           SliverToBoxAdapter(
             child: Padding(
