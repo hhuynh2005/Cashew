@@ -100,11 +100,10 @@ double? amountRatioFromToCurrency(
 String getCurrencyString(AllWallets allWallets, {String? currencyKey}) {
   String? selectedWalletCurrency =
       allWallets.indexedByPk[appStateSettings["selectedWalletPk"]]?.currency;
-  return currencyKey != null
-      ? (currenciesJSON[currencyKey]?["Symbol"] ?? "")
-      : selectedWalletCurrency == null
-          ? ""
-          : (currenciesJSON[selectedWalletCurrency]?["Symbol"] ?? "");
+  String? currency = currencyKey ?? selectedWalletCurrency;
+  if (currency == null) return "";
+  if (currency.toLowerCase() == "vnd") return "₫";
+  return currenciesJSON[currency]?["Symbol"] ?? "";
 }
 
 double getCurrencyExchangeRate(
