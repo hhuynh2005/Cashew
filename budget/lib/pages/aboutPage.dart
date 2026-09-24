@@ -94,13 +94,74 @@ class AboutPageState extends State<AboutPage> {
       ],
     );
 
+    List<Widget> studentProjectTeam = [
+      Padding(
+        padding:
+            const EdgeInsetsDirectional.symmetric(horizontal: 15, vertical: 7),
+        child: Center(
+          child: Column(
+            children: [
+              TextFont(
+                text: "NHÓM THỰC HIỆN ĐỒ ÁN",
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+              ),
+              const SizedBox(height: 4),
+              TextFont(
+                text: "Ứng Dụng Quản Lý Chi Tiêu Cá Nhân Cashew",
+                fontSize: 13,
+                textAlign: TextAlign.center,
+                textColor: getColor(context, "textLight"),
+              ),
+            ],
+          ),
+        ),
+      ),
+      StudentMemberCard(
+        containerColor: containerColor,
+        role: "Nhóm trưởng",
+        name: "Nguyễn Văn Huỳnh",
+        studentId: "2351170599",
+        task: "Quản lý repo, Git flow, đóng gói release APK",
+        icon: Icons.stars_rounded,
+      ),
+      StudentMemberCard(
+        containerColor: containerColor,
+        role: "Thành viên - UI & Theme",
+        name: "NGUYỄN TRUNG KIÊN",
+        studentId: "2251172394",
+        task: "Tùy biến giao diện, branding banner & bảng màu sắc",
+        icon: Icons.palette_rounded,
+        highlight: true,
+      ),
+      StudentMemberCard(
+        containerColor: containerColor,
+        role: "Thành viên - Kiểm thử",
+        name: "Lê Anh Tuấn",
+        studentId: "2151060296",
+        task: "Chuẩn hóa dependencies, môi trường & test CRUD",
+        icon: Icons.fact_check_rounded,
+      ),
+      StudentMemberCard(
+        containerColor: containerColor,
+        role: "Thành viên - Tính năng",
+        name: "Trần Anh Tuấn",
+        studentId: "2351170629",
+        task: "Format tiền tệ VNĐ mặc định, danh mục sinh viên",
+        icon: Icons.monetization_on_rounded,
+      ),
+      const SizedBox(height: 10),
+    ];
+
     List<Widget> developmentTeam = [
       Padding(
         padding:
             const EdgeInsetsDirectional.symmetric(horizontal: 15, vertical: 7),
         child: Center(
           child: TextFont(
-            text: "development-team".tr(),
+            text: "Tác Giả Gốc Cashew (Original Authors)",
             fontSize: 20,
             fontWeight: FontWeight.bold,
             textAlign: TextAlign.center,
@@ -556,6 +617,11 @@ class AboutPageState extends State<AboutPage> {
                       Flexible(
                         child: Column(
                           children: [
+                            for (Widget teamMember in studentProjectTeam)
+                              Row(children: [Expanded(child: teamMember)]),
+                            HorizontalBreak(
+                                padding: EdgeInsetsDirectional.symmetric(
+                                    horizontal: 10, vertical: 20)),
                             for (Widget teamMember in developmentTeam)
                               Row(children: [Expanded(child: teamMember)]),
                             HorizontalBreak(
@@ -592,6 +658,10 @@ class AboutPageState extends State<AboutPage> {
               ),
               SizedBox(height: 5),
               AboutLinks(containerColor: containerColor),
+              SizedBox(height: 10),
+              HorizontalBreak(),
+              SizedBox(height: 10),
+              ...studentProjectTeam,
               SizedBox(height: 10),
               HorizontalBreak(),
               SizedBox(height: 10),
@@ -855,7 +925,7 @@ class AboutLinks extends StatelessWidget {
             _buildTappable(
               context: context,
               isExternalLink: true,
-              onTap: () => openUrl("https://github.com/jameskokoska/Cashew"),
+              onTap: () => openUrl("https://github.com/hhuynh2005/Cashew"),
               icon: MoreIcons.github,
               text: "app-is-open-source".tr(namedArgs: {"app": globalAppName}),
             ),
@@ -1106,3 +1176,115 @@ class AboutInfoBox extends StatelessWidget {
     );
   }
 }
+
+class StudentMemberCard extends StatelessWidget {
+  const StudentMemberCard({
+    Key? key,
+    required this.containerColor,
+    required this.role,
+    required this.name,
+    required this.studentId,
+    required this.task,
+    required this.icon,
+    this.highlight = false,
+  }) : super(key: key);
+
+  final Color containerColor;
+  final String role;
+  final String name;
+  final String studentId;
+  final String task;
+  final IconData icon;
+  final bool highlight;
+
+  @override
+  Widget build(BuildContext context) {
+    Color primaryColor = Theme.of(context).colorScheme.primary;
+    return Padding(
+      padding:
+          const EdgeInsetsDirectional.symmetric(horizontal: 15, vertical: 5),
+      child: Container(
+        decoration: BoxDecoration(
+          color: containerColor,
+          borderRadius:
+              BorderRadius.circular(getPlatform() == PlatformOS.isIOS ? 10 : 15),
+          border: highlight
+              ? Border.all(
+                  color: primaryColor.withOpacity(0.6),
+                  width: 1.5,
+                )
+              : null,
+        ),
+        child: Padding(
+          padding:
+              const EdgeInsetsDirectional.symmetric(horizontal: 15, vertical: 12),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: primaryColor.withOpacity(0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  size: 22,
+                  color: primaryColor,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextFont(
+                          text: role,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          textColor: primaryColor,
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: primaryColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: TextFont(
+                            text: studentId,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            textColor: primaryColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 3),
+                    TextFont(
+                      text: name,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      textColor:
+                          Theme.of(context).colorScheme.onPrimaryContainer,
+                    ),
+                    const SizedBox(height: 2),
+                    TextFont(
+                      text: task,
+                      fontSize: 12,
+                      maxLines: 2,
+                      textColor: getColor(context, "textLight"),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+

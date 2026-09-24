@@ -123,6 +123,7 @@ AppColors getAppColors(
 // Ensure you specify a shade, otherwise type will be of MaterialColor which can't be compared
 // when using in other widgets, such as the Color Picker
 extension ColorsDefined on ColorScheme {
+  Color get selectableColorEmerald => const Color(0xFF00796B);
   Color get selectableColorRed => Colors.red.shade400;
   Color get selectableColorGreen => Colors.green.shade400;
   Color get selectableColorBlue => Colors.blue.shade400;
@@ -282,6 +283,7 @@ String? toHexString(Color? color) {
 
 List<Color> selectableColors(context) {
   return [
+    Theme.of(context).colorScheme.selectableColorEmerald,
     Theme.of(context).colorScheme.selectableColorGreen,
     Theme.of(context).colorScheme.selectableColorAqua,
     Theme.of(context).colorScheme.selectableColorCyan,
@@ -301,6 +303,7 @@ List<Color> selectableColors(context) {
 
 List<Color> selectableAccentColors(context) {
   return [
+    Theme.of(context).colorScheme.selectableColorEmerald,
     Theme.of(context).colorScheme.selectableColorGreen,
     Theme.of(context).colorScheme.selectableColorCyan,
     Theme.of(context).colorScheme.selectableColorBlue,

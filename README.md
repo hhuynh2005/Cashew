@@ -120,7 +120,12 @@ git push origin kien-custom-ui-branding
 
 Tất cả ảnh chụp màn hình kết quả chạy và kiểm thử ứng dụng được lưu trữ theo cấu trúc:
 - `screenshots/crud/`: Ảnh chụp minh chứng kiểm thử các chức năng cơ bản: Thêm, Sửa, Xóa chi tiêu, tính toán số dư.
-- `screenshots/customization/`: Ảnh chụp minh chứng các phần đã tùy chỉnh UI và tính năng (ảnh so sánh Trước và Sau).
+- `screenshots/customization/`: Ảnh chụp minh chứng các phần đã tùy chỉnh UI và tính năng:
+  - `defaultmoney.png`: Format tiền tệ mặc định VNĐ (Trần Anh Tuấn)
+  - `student_categories.png`: Danh mục chi tiêu đặc thù cho sinh viên (Trần Anh Tuấn)
+  - `kien_ui_settings_banner.png`: Banner nhận diện thương hiệu nhóm trên trang Cài đặt (Nguyễn Trung Kiên)
+  - `kien_ui_about_team.png`: Màn hình About hiển thị thông tin đồ án & danh sách thành viên nhóm (Nguyễn Trung Kiên)
+  - `kien_theme_colors.png`: Tinh chỉnh bảng màu sắc và màu chủ đạo nhận diện Emerald Teal (Nguyễn Trung Kiên)
 - `screenshots/build/`: Ảnh chụp minh chứng ứng dụng khởi chạy thành công trên máy và thông tin đóng gói bản APK.
 
 ---

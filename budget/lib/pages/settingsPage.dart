@@ -114,6 +114,7 @@ class MoreActionsPageState extends State<MoreActionsPage> {
           ),
         ],
         listWidgets: [
+          TeamBrandingBanner(),
           Padding(
             padding: const EdgeInsetsDirectional.only(bottom: 8.0),
             child: PremiumBanner(),
@@ -1819,3 +1820,167 @@ List<String> getWeekdayNames() {
 
   return localizedWeekdayNames;
 }
+
+class TeamBrandingBanner extends StatelessWidget {
+  const TeamBrandingBanner({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    Color primaryColor = Theme.of(context).colorScheme.primary;
+    Color surfaceColor = appStateSettings["materialYou"]
+        ? dynamicPastel(
+            context,
+            Theme.of(context).colorScheme.secondaryContainer,
+            amountLight: 0.15,
+            amountDark: 0.5,
+          )
+        : getColor(context, "lightDarkAccent");
+
+    return Container(
+      margin: const EdgeInsetsDirectional.only(
+          start: 9, end: 9, top: 2, bottom: 10),
+      decoration: BoxDecoration(
+        color: surfaceColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: primaryColor.withOpacity(0.25),
+          width: 1.2,
+        ),
+        boxShadow: boxShadowSharp(context),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              pushRoute(context, const AboutPage());
+            },
+            borderRadius: BorderRadius.circular(16),
+            child: Padding(
+              padding: const EdgeInsetsDirectional.all(15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: primaryColor.withOpacity(0.12),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.account_balance_wallet_rounded,
+                          color: primaryColor,
+                          size: 26,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: primaryColor.withOpacity(0.12),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: TextFont(
+                                text: "ĐỒ ÁN PHÁT TRIỂN ỨNG DỤNG",
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                textColor: primaryColor,
+                              ),
+                            ),
+                            const SizedBox(height: 3),
+                            TextFont(
+                              text: "Cashew - Quản Lý Chi Tiêu",
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                              textColor: Theme.of(context)
+                                  .colorScheme
+                                  .onSecondaryContainer,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(
+                        Icons.chevron_right_rounded,
+                        color: getColor(context, "textLight"),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  TextFont(
+                    text: "Nhóm sinh viên thực hiện:",
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    textColor: getColor(context, "textLight"),
+                  ),
+                  const SizedBox(height: 6),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [
+                      _buildMemberChip(context, "👑 Văn Huỳnh (Lead)"),
+                      _buildMemberChip(context, "🎨 Trung Kiên (UI/Theme)",
+                          isHighlighted: true),
+                      _buildMemberChip(context, "🧪 Anh Tuấn (Test)"),
+                      _buildMemberChip(context, "💵 Anh Tuấn (VNĐ)"),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextFont(
+                        text: "Chạm để xem chi tiết thành viên & đồ án",
+                        fontSize: 12,
+                        textColor: primaryColor,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      Icon(
+                        Icons.info_outline_rounded,
+                        size: 16,
+                        color: primaryColor,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMemberChip(BuildContext context, String label,
+      {bool isHighlighted = false}) {
+    Color primaryColor = Theme.of(context).colorScheme.primary;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: isHighlighted
+            ? primaryColor.withOpacity(0.18)
+            : Theme.of(context).colorScheme.surface.withOpacity(0.7),
+        borderRadius: BorderRadius.circular(8),
+        border: isHighlighted
+            ? Border.all(color: primaryColor.withOpacity(0.4), width: 1)
+            : null,
+      ),
+      child: TextFont(
+        text: label,
+        fontSize: 11,
+        fontWeight: isHighlighted ? FontWeight.bold : FontWeight.w500,
+        textColor: isHighlighted
+            ? primaryColor
+            : Theme.of(context).colorScheme.onSurface,
+      ),
+    );
+  }
+}
+
