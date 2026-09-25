@@ -25,7 +25,7 @@
 | **2** | **Cài đặt dependencies & cấu hình môi trường** | **Lê Anh Tuấn** | Nguyễn Văn Huỳnh | • Kiểm tra Flutter SDK (v3.47.5), Dart SDK, Android SDK 36<br>• Chạy `flutter pub get` trong thư mục `budget`<br>• Viết báo cáo cài đặt & xử lý dependencies tại [`SETUP_ENVIRONMENT.md`](SETUP_ENVIRONMENT.md) | `letuan-setup-dependencies` | ✅ Hoàn thành |
 | **3** | **Khởi chạy local & kiểm tra chức năng cơ bản (CRUD)** | **Lê Anh Tuấn** | NGUYỄN TRUNG KIÊN, Trần Anh Tuấn | • Chạy ứng dụng trên Emulator / thiết bị thật / Web<br>• Kiểm thử chức năng: Thêm, Sửa, Xóa chi tiêu<br>• Kiểm thử số dư, hạn mức danh mục và biểu đồ báo cáo<br>• Chụp 5 ảnh minh chứng lưu tại `screenshots/crud/` | `letuan-test-crud` | ✅ Hoàn thành |
 | **4** | **Tùy chỉnh tính năng hoặc thay đổi giao diện (UI)** | **NGUYỄN TRUNG KIÊN** (UI)<br>**Trần Anh Tuấn** (Tính năng) | Nguyễn Văn Huỳnh (Review & Merge) | • **UI (Kiên):** Tùy chỉnh thông tin nhóm tại Settings/About, đổi màu sắc chủ đạo sang Emerald `#00796B`, đổi banner nhận diện nhóm.<br>• **Tính năng (Tuấn):** Bổ sung danh mục chi tiêu học tập sinh viên, định dạng tiền tệ mặc định VNĐ, tối ưu hóa bộ lọc chi tiêu.<br>• Đã hoàn thành, review code và merge vào nhánh `main`. | `kien-custom-ui-branding`<br>`trantuan-custom-currency-vnd`<br>`trantuan-custom-feature` | ✅ Hoàn thành |
-| **5** | **Đóng gói sản phẩm & Nộp bài** | **Nguyễn Văn Huỳnh** | Lê Anh Tuấn, NGUYỄN TRUNG KIÊN, Trần Anh Tuấn | • Đóng gói ứng dụng thành file APK release (`flutter build apk --release`)<br>• Tổng hợp toàn bộ ảnh chụp màn hình minh chứng kết quả<br>• Hoàn thiện README và nộp link GitHub đúng hạn | `huynh-build-release` | 🔄 Đang triển khai |
+| **5** | **Đóng gói sản phẩm & Nộp bài** | **Nguyễn Văn Huỳnh** | Lê Anh Tuấn, NGUYỄN TRUNG KIÊN, Trần Anh Tuấn | • Đóng gói ứng dụng thành bản phát hành Web/PWA (`build/web`) và gói nén `Cashew-Web-Release.zip`<br>• Khởi chạy và kiểm thử live session ứng dụng trên trình duyệt Chrome<br>• Tổng hợp toàn bộ ảnh chụp màn hình minh chứng kết quả<br>• Hoàn thiện README và nộp link GitHub đúng hạn | `huynh-build-release` | ✅ Hoàn thành |
 
 ---
 
@@ -40,7 +40,7 @@
 
 | Thành Viên | Tiền Tố Tên | Tên Nhánh Khi Push Code | Mục Đích / Chức Năng Phụ Trách | Trạng Thái Nhánh |
 |---|:---:|:---|:---|:---:|
-| **Nguyễn Văn Huỳnh** | `huynh-` | `huynh-setup-repo`<br>`huynh-build-release` | • Cấu hình dự án, quản lý repo<br>• Đóng gói APK và hoàn thiện tài liệu nộp bài | ✅ Đã merge<br>🔄 Đang triển khai |
+| **Nguyễn Văn Huỳnh** | `huynh-` | `huynh-setup-repo`<br>`huynh-build-release` | • Cấu hình dự án, quản lý repo<br>• Đóng gói sản phẩm và hoàn thiện tài liệu nộp bài | ✅ Đã merge<br>✅ Đã hoàn thành |
 | **Lê Anh Tuấn** | `letuan-` | `letuan-setup-dependencies`<br>`letuan-test-crud` | • Thiết lập thư viện và tài liệu môi trường<br>• Thực hiện và ghi log kiểm thử Thêm/Sửa/Xóa giao dịch | ✅ Đã merge<br>✅ Đã merge |
 | **NGUYỄN TRUNG KIÊN** | `kien-` | `kien-custom-ui-branding`<br>`kien-custom-theme` | • Tùy chỉnh giao diện: màn hình giới thiệu nhóm, logo, banner<br>• Tùy biến màu sắc, theme theo nhận diện nhóm | ✅ Đã merge<br>✅ Đã merge |
 | **Trần Anh Tuấn** | `trantuan-` | `trantuan-custom-currency-vnd`<br>`trantuan-custom-feature` | • Tùy chỉnh tiền tệ VNĐ mặc định, format số tiền<br>• Thêm danh mục chi tiêu sinh viên & cải tiến bộ lọc | ✅ Đã merge<br>✅ Đã merge |
@@ -60,7 +60,7 @@ git pull origin main
 
 # Bước 2: Tạo nhánh mới với quy tắc: <tên>-<tên-chức-năng>
 # Ví dụ:
-git checkout -b letuan-test-crud
+git checkout -b huynh-build-release
 
 # Bước 3: Thực hiện code, chỉnh sửa và kiểm thử ứng dụng chạy ổn định ở local
 
@@ -69,10 +69,10 @@ git status
 
 # Bước 5: Thêm file và commit với cú pháp rõ ràng
 git add .
-git commit -m "[LeTuan] Kiem thu chuc nang CRUD va chup anh minh chung"
+git commit -m "[Huynh] Dong goi san pham phat hanh va hoan thien README"
 
 # Bước 6: Push nhánh mới lên remote GitHub
-git push origin letuan-test-crud
+git push origin huynh-build-release
 
 # Bước 7: Mở GitHub repository, chọn 'Compare & pull request' để gửi yêu cầu merge vào nhánh main.
 # Nhóm trưởng sẽ review code và duyệt merge.
@@ -107,7 +107,7 @@ git push origin letuan-test-crud
 ### Yêu cầu tiên quyết:
 - **Flutter SDK:** `>= 3.0.0` (Khuyên dùng Flutter 3.x stable)
 - **Dart SDK:** Đi kèm với Flutter
-- **Công cụ:** Android Studio / VS Code, Android Emulator hoặc thiết bị thật (hoặc trình duyệt Chrome/Edge)
+- **Công cụ:** Google Chrome / Edge (cho Web), hoặc Android Studio / VS Code với Android Emulator.
 
 ### Các bước thực hiện:
 
@@ -124,14 +124,23 @@ git push origin letuan-test-crud
 
 3. **Khởi chạy ứng dụng (Debug Mode):**
    ```bash
-   flutter run
+   # Khởi chạy trên trình duyệt Web (Google Chrome):
+   flutter run -d chrome
+
+   # Hoặc khởi chạy trên máy ảo Android (Pixel_34):
+   # flutter emulators --launch Pixel_34
+   # flutter run
    ```
 
-4. **Đóng gói bản cài đặt Android APK (Release Mode):**
+4. **Đóng gói bản cài đặt phát hành (Release Mode):**
    ```bash
-   flutter build apk --release
+   # Đóng gói bản phát hành Web / PWA:
+   flutter build web --release
+
+   # Đóng gói bản cài đặt Android APK (khi cấu hình Android build):
+   # flutter build apk --release
    ```
-   *File APK sau khi build nằm tại:* `budget/build/app/outputs/flutter-apk/app-release.apk`
+   *Thư mục phát hành sau khi build nằm tại:* `budget/build/web/` hoặc file nén `Cashew-Web-Release.zip` tại thư mục gốc.
 
 ---
 
@@ -156,7 +165,14 @@ Toàn bộ ảnh chụp màn hình kết quả chạy và kiểm thử ứng d�
 | `home.png` | Giao diện chính màn hình Home với Theme màu Emerald mới | Nguyễn Trung Kiên | [`screenshots/customization/home.png`](screenshots/customization/home.png) |
 | `defaultmoney.png` | Cấu hình tiền tệ mặc định sang VNĐ (Việt Nam Đồng) | Trần Anh Tuấn | [`screenshots/customization/defaultmoney.png`](screenshots/customization/defaultmoney.png) |
 | `student_categories.png` | Danh mục chi tiêu học tập - sinh hoạt cho sinh viên | Trần Anh Tuấn | [`screenshots/customization/student_categories.png`](screenshots/customization/student_categories.png) |
-| `build/` | Thư mục chứa ảnh chụp minh chứng build ứng dụng & APK | Nguyễn Văn Huỳnh | `screenshots/build/` |
+
+### 📦 6.3. Minh Chứng Đóng Gói Sản Phẩm (Release Packaging) - Thực hiện: Nguyễn Văn Huỳnh
+| Sản Phẩm Bàn Giao | Mô Tả | Trạng Thái | Vị Trí Lưu Trữ |
+|:---|:---|:---:|:---:|
+| `build/web/` | Bản build phát hành Web/PWA hoàn chỉnh với tối ưu AOT & Tree-shaking | ✅ Đạt | `budget/build/web/` |
+| `Cashew-Web-Release.zip` | Gói nén zip toàn bộ bundle phát hành độc lập để triển khai | ✅ Đạt | Thư mục gốc dự án |
+| `screenshots/build/` | Tài liệu minh chứng quy trình đóng gói và triển khai sản phẩm | ✅ Đạt | [`screenshots/build/README.md`](screenshots/build/README.md) |
+
 
 ---
 
