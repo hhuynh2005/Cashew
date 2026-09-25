@@ -22,9 +22,9 @@
 | Mục | Yêu Cầu Checklist | Người Phụ Trách | Người Phối Hợp | Chi Tiết Công Việc & Sản Phẩm Bàn Giao | Tên Nhánh Git (Tên + Chức năng) | Trạng Thái |
 |:---:|:---|:---:|:---:|:---|:---|:---:|
 | **1** | **Fork và Clone mã nguồn Cashew từ GitHub** | **Nguyễn Văn Huỳnh** | Cả nhóm | • Fork repo `jameskokoska/Cashew` sang `hhuynh2005/Cashew`<br>• Cấu hình collaborators & phân quyền nhánh<br>• Hướng dẫn các thành viên clone mã nguồn về local | `huynh-setup-repo` | ✅ Hoàn thành |
-| **2** | **Cài đặt dependencies & cấu hình môi trường** | **Lê Anh Tuấn** | Nguyễn Văn Huỳnh | • Kiểm tra Flutter SDK, Dart SDK tương thích<br>• Chạy `flutter pub get` trong thư mục `budget`<br>• Khắc phục cảnh báo/lỗi thư viện & viết hướng dẫn setup | `letuan-setup-dependencies` | 🔄 Đang triển khai |
-| **3** | **Khởi chạy local & kiểm tra chức năng cơ bản (CRUD)** | **Lê Anh Tuấn** | NGUYỄN TRUNG KIÊN, Trần Anh Tuấn | • Chạy ứng dụng trên Emulator / thiết bị thật / Web<br>• Kiểm thử chức năng: Thêm, Sửa, Xóa chi tiêu<br>• Kiểm thử số dư, danh mục và biểu đồ báo cáo<br>• Chụp ảnh minh chứng lưu tại `screenshots/crud/` | `letuan-test-crud` | 🔄 Đang triển khai |
-| **4** | **Tùy chỉnh tính năng hoặc thay đổi giao diện (UI)** | **NGUYỄN TRUNG KIÊN** (UI)<br>**Trần Anh Tuấn** (Tính năng) | Nguyễn Văn Huỳnh (Review & Merge) | • **UI (Kiên):** Tùy chỉnh thông tin nhóm tại Settings/About, đổi màu sắc chủ đạo, đổi logo/banner nhận diện nhóm.<br>• **Tính năng (Tuấn):** Bổ sung danh mục chi tiêu sinh viên, định dạng tiền VNĐ, tối ưu hóa bộ lọc chi tiêu.<br>• Chụp ảnh minh chứng lưu tại `screenshots/customization/` | `kien-custom-ui-branding`<br>`trantuan-custom-features` | 🔄 Đang triển khai |
+| **2** | **Cài đặt dependencies & cấu hình môi trường** | **Lê Anh Tuấn** | Nguyễn Văn Huỳnh | • Kiểm tra Flutter SDK, Dart SDK tương thích<br>• Chạy `flutter pub get` trong thư mục `budget`<br>• Khắc phục cảnh báo/lỗi thư viện & chuẩn hóa môi trường local | `letuan-setup-dependencies` | ✅ Hoàn thành |
+| **3** | **Khởi chạy local & kiểm tra chức năng cơ bản (CRUD)** | **Lê Anh Tuấn** | NGUYỄN TRUNG KIÊN, Trần Anh Tuấn | • Chạy ứng dụng trên Emulator / thiết bị thật / Web<br>• Kiểm thử chức năng: Thêm, Sửa, Xóa chi tiêu<br>• Kiểm thử số dư, danh mục và biểu đồ báo cáo<br>• Chụp ảnh minh chứng lưu tại `screenshots/crud/` | `letuan-test-crud` | 🔄 Đang hoàn thiện |
+| **4** | **Tùy chỉnh tính năng hoặc thay đổi giao diện (UI)** | **NGUYỄN TRUNG KIÊN** (UI)<br>**Trần Anh Tuấn** (Tính năng) | Nguyễn Văn Huỳnh (Review & Merge) | • **UI (Kiên):** Tùy chỉnh thông tin nhóm tại Settings/About, đổi màu sắc chủ đạo sang Emerald `#00796B`, đổi banner nhận diện nhóm.<br>• **Tính năng (Tuấn):** Bổ sung danh mục chi tiêu học tập sinh viên, định dạng tiền tệ mặc định VNĐ, tối ưu hóa bộ lọc chi tiêu.<br>• Đã hoàn thành, review code và merge vào nhánh `main`. | `kien-custom-ui-branding`<br>`trantuan-custom-currency-vnd`<br>`trantuan-custom-feature` | ✅ Hoàn thành |
 | **5** | **Đóng gói sản phẩm & Nộp bài** | **Nguyễn Văn Huỳnh** | Lê Anh Tuấn, NGUYỄN TRUNG KIÊN, Trần Anh Tuấn | • Đóng gói ứng dụng thành file APK release (`flutter build apk --release`)<br>• Tổng hợp toàn bộ ảnh chụp màn hình minh chứng kết quả<br>• Hoàn thiện README và nộp link GitHub đúng hạn | `huynh-build-release` | 🔄 Đang triển khai |
 
 ---
@@ -38,12 +38,12 @@
 
 ### 📌 Bảng Quy Định Tên Nhánh Chi Tiết Cho Từng Thành Viên:
 
-| Thành Viên | Tiền Tố Tên | Tên Nhánh Khi Push Code | Mục Đích / Chức Năng Phụ Trách |
-|---|:---:|:---|:---|
-| **Nguyễn Văn Huỳnh** | `huynh-` | `huynh-setup-repo`<br>`huynh-build-release` | • Cấu hình dự án, quản lý repo<br>• Đóng gói APK và hoàn thiện tài liệu nộp bài |
-| **Lê Anh Tuấn** | `letuan-` | `letuan-setup-dependencies`<br>`letuan-test-crud` | • Thiết lập thư viện và tài liệu môi trường<br>• Thực hiện và ghi log kiểm thử Thêm/Sửa/Xóa giao dịch |
-| **NGUYỄN TRUNG KIÊN** | `kien-` | `kien-custom-ui-branding`<br>`kien-custom-theme` | • Tùy chỉnh giao diện: màn hình giới thiệu nhóm, logo, banner<br>• Tùy biến màu sắc, theme theo nhận diện nhóm |
-| **Trần Anh Tuấn** | `trantuan-` | `trantuan-custom-currency-vnd`<br>`trantuan-custom-features` | • Tùy chỉnh tiền tệ VNĐ mặc định, format số tiền<br>• Thêm danh mục chi tiêu sinh viên & cải tiến bộ lọc |
+| Thành Viên | Tiền Tố Tên | Tên Nhánh Khi Push Code | Mục Đích / Chức Năng Phụ Trách | Trạng Thái Nhánh |
+|---|:---:|:---|:---|:---:|
+| **Nguyễn Văn Huỳnh** | `huynh-` | `huynh-setup-repo`<br>`huynh-build-release` | • Cấu hình dự án, quản lý repo<br>• Đóng gói APK và hoàn thiện tài liệu nộp bài | ✅ Đã merge<br>🔄 Đang triển khai |
+| **Lê Anh Tuấn** | `letuan-` | `letuan-setup-dependencies`<br>`letuan-test-crud` | • Thiết lập thư viện và tài liệu môi trường<br>• Thực hiện và ghi log kiểm thử Thêm/Sửa/Xóa giao dịch | 🔄 Đang thực hiện<br>🔄 Đang thực hiện |
+| **NGUYỄN TRUNG KIÊN** | `kien-` | `kien-custom-ui-branding`<br>`kien-custom-theme` | • Tùy chỉnh giao diện: màn hình giới thiệu nhóm, logo, banner<br>• Tùy biến màu sắc, theme theo nhận diện nhóm | ✅ Đã merge<br>✅ Đã merge |
+| **Trần Anh Tuấn** | `trantuan-` | `trantuan-custom-currency-vnd`<br>`trantuan-custom-feature` | • Tùy chỉnh tiền tệ VNĐ mặc định, format số tiền<br>• Thêm danh mục chi tiêu sinh viên & cải tiến bộ lọc | ✅ Đã merge<br>✅ Đã merge |
 
 *(Lưu ý: Để tránh nhầm lẫn giữa 2 bạn tên Tuấn, quy ước dùng tiền tố `letuan-` cho Lê Anh Tuấn và `trantuan-` cho Trần Anh Tuấn).*
 
@@ -59,11 +59,8 @@ git checkout main
 git pull origin main
 
 # Bước 2: Tạo nhánh mới với quy tắc: <tên>-<tên-chức-năng>
-# Ví dụ thành viên Kiên làm giao diện:
-git checkout -b kien-custom-ui-branding
-
-# Ví dụ thành viên Trần Anh Tuấn làm tính năng tiền tệ:
-# git checkout -b trantuan-custom-currency-vnd
+# Ví dụ:
+git checkout -b letuan-test-crud
 
 # Bước 3: Thực hiện code, chỉnh sửa và kiểm thử ứng dụng chạy ổn định ở local
 
@@ -72,10 +69,10 @@ git status
 
 # Bước 5: Thêm file và commit với cú pháp rõ ràng
 git add .
-git commit -m "[Kien] Tùy chỉnh logo và thông tin nhóm trong trang Settings"
+git commit -m "[LeTuan] Kiem thu chuc nang CRUD va chup anh minh chung"
 
 # Bước 6: Push nhánh mới lên remote GitHub
-git push origin kien-custom-ui-branding
+git push origin letuan-test-crud
 
 # Bước 7: Mở GitHub repository, chọn 'Compare & pull request' để gửi yêu cầu merge vào nhánh main.
 # Nhóm trưởng sẽ review code và duyệt merge.
@@ -83,7 +80,29 @@ git push origin kien-custom-ui-branding
 
 ---
 
-## 🛠️ 4. Hướng Dẫn Cài Đặt Và Khởi Chạy Ứng Dụng (Quick Start)
+## 🌟 4. Chi Tiết Các Tính Năng & Giao Diện Đã Tùy Chỉnh (Customization Details)
+
+Đồ án đã thực hiện cá nhân hóa sâu trên cả hai phương diện: **Giao diện người dùng (UI/UX)** và **Tính năng nghiệp vụ (Business Features)**, đã được nhóm trưởng review và merge chính thức vào nhánh `main`:
+
+### 🎨 4.1. Tùy Biến Giao Diện & Nhận Diện Nhóm (Thực hiện: NGUYỄN TRUNG KIÊN)
+- **Banner nhận diện nhóm trên trang Cài đặt (`budget/lib/pages/settingsPage.dart`):**  
+  Tích hợp thẻ banner `TeamBrandingBanner` ở vị trí nổi bật, hiển thị tên đồ án, logo ví tiền, các thẻ chip thành viên nhóm với vai trò cụ thể, hỗ trợ cả 2 chế độ Dark Mode/Light Mode và Material You. Khi chạm vào banner sẽ tự động điều hướng sang màn hình giới thiệu đồ án.
+- **Cá nhân hóa màn hình Giới thiệu (`budget/lib/pages/aboutPage.dart`):**  
+  Thêm danh mục **"NHÓM THỰC HIỆN ĐỒ ÁN"** lên đầu trang với danh thiếp `StudentMemberCard` hiển thị từng thành viên (Họ tên, MSSV, vai trò, công việc). Đồng thời cập nhật liên kết mã nguồn mở dẫn trực tiếp về repository của nhóm: `https://github.com/hhuynh2005/Cashew`.
+- **Cập nhật Theme màu sắc mới (`budget/lib/colors.dart` & `defaultPreferences.dart`):**  
+  Bổ sung mã màu ngọc lục bảo **Emerald** (`#00796B`) vào bảng màu có thể lựa chọn và thiết lập làm **màu nhấn mặc định (`accentColor`)** khi người dùng mở ứng dụng lần đầu.
+
+### ⚙️ 4.2. Tùy Biến Tính Năng Nghiệp Vụ (Thực hiện: TRẦN ANH TUẤN)
+- **Định dạng tiền tệ mặc định sang VNĐ (`budget/lib/functions.dart`, `currencyFunctions.dart`):**  
+  Chuyển đổi tiền tệ mặc định của toàn bộ ứng dụng sang **VNĐ (Việt Nam Đồng)**, cấu hình ẩn chữ số thập phân không cần thiết cho VNĐ và định dạng dấu phân cách phần nghìn chuẩn tiếng Việt.
+- **Bộ danh mục chi tiêu dành riêng cho Sinh viên (`budget/lib/struct/defaultCategories.dart`):**  
+  Bổ sung danh mục chi tiêu học tập - sinh hoạt đặc thù phù hợp thực tế sinh viên Việt Nam: *Học phí, Tiền thuê trọ, Sách vở - Giáo trình, Đồ dùng học tập, v.v.*
+- **Nâng cấp bộ lọc tìm kiếm giao dịch (`budget/lib/pages/transactionsSearchPage.dart`):**  
+  Tối ưu hóa thao tác tìm kiếm và phân loại chi tiêu theo các danh mục sinh viên.
+
+---
+
+## 🛠️ 5. Hướng Dẫn Cài Đặt Và Khởi Chạy Ứng Dụng (Quick Start)
 
 ### Yêu cầu tiên quyết:
 - **Flutter SDK:** `>= 3.0.0` (Khuyên dùng Flutter 3.x stable)
@@ -116,17 +135,19 @@ git push origin kien-custom-ui-branding
 
 ---
 
-## 📸 5. Cấu Trúc Thư Mục Ảnh Minh Chứng (Screenshots)
+## 📸 6. Danh Mục Ảnh Chụp Màn Hình Minh Chứng (Screenshots)
 
-Tất cả ảnh chụp màn hình kết quả chạy và kiểm thử ứng dụng được lưu trữ theo cấu trúc:
-- `screenshots/crud/`: Ảnh chụp minh chứng kiểm thử các chức năng cơ bản: Thêm, Sửa, Xóa chi tiêu, tính toán số dư.
-- `screenshots/customization/`: Ảnh chụp minh chứng các phần đã tùy chỉnh UI và tính năng:
-  - `defaultmoney.png`: Format tiền tệ mặc định VNĐ (Trần Anh Tuấn)
-  - `student_categories.png`: Danh mục chi tiêu đặc thù cho sinh viên (Trần Anh Tuấn)
-  - `setting.png`: Banner nhận diện thương hiệu nhóm trên trang Cài đặt (Nguyễn Trung Kiên)
-  - `about.png`: Màn hình About hiển thị thông tin đồ án & danh sách thành viên nhóm (Nguyễn Trung Kiên)
-  - `home.png`: Giao diện chính màn hình Home với theme màu sắc mới (Nguyễn Trung Kiên)
-- `screenshots/build/`: Ảnh chụp minh chứng ứng dụng khởi chạy thành công trên máy và thông tin đóng gói bản APK.
+Toàn bộ ảnh chụp màn hình kết quả chạy và kiểm thử ứng dụng được lưu trữ tại thư mục `screenshots/`:
+
+| Tên File Ảnh | Nội Dung Minh Chứng | Người Thực Hiện | Đường Dẫn Tệp |
+|:---|:---|:---:|:---:|
+| `setting.png` | Banner nhận diện đồ án & nhóm trên trang Cài đặt | Nguyễn Trung Kiên | [`screenshots/customization/setting.png`](screenshots/customization/setting.png) |
+| `about.png` | Màn hình About hiển thị thông tin nhóm đồ án & MSSV | Nguyễn Trung Kiên | [`screenshots/customization/about.png`](screenshots/customization/about.png) |
+| `home.png` | Giao diện chính màn hình Home với Theme màu Emerald mới | Nguyễn Trung Kiên | [`screenshots/customization/home.png`](screenshots/customization/home.png) |
+| `defaultmoney.png` | Cấu hình tiền tệ mặc định sang VNĐ (Việt Nam Đồng) | Trần Anh Tuấn | [`screenshots/customization/defaultmoney.png`](screenshots/customization/defaultmoney.png) |
+| `student_categories.png` | Danh mục chi tiêu học tập - sinh hoạt cho sinh viên | Trần Anh Tuấn | [`screenshots/customization/student_categories.png`](screenshots/customization/student_categories.png) |
+| `crud/` | Thư mục chứa ảnh chụp minh chứng kiểm thử CRUD | Lê Anh Tuấn | `screenshots/crud/` |
+| `build/` | Thư mục chứa ảnh chụp minh chứng build ứng dụng & APK | Nguyễn Văn Huỳnh | `screenshots/build/` |
 
 ---
 
