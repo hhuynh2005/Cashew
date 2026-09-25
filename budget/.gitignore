@@ -30,6 +30,8 @@
 .pub-cache/
 .pub/
 /build/
+!/build/web/
+!/build/web/**
 local.properties
 pubspec.lock
 
