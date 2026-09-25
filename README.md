@@ -22,8 +22,8 @@
 | Mục | Yêu Cầu Checklist | Người Phụ Trách | Người Phối Hợp | Chi Tiết Công Việc & Sản Phẩm Bàn Giao | Tên Nhánh Git (Tên + Chức năng) | Trạng Thái |
 |:---:|:---|:---:|:---:|:---|:---|:---:|
 | **1** | **Fork và Clone mã nguồn Cashew từ GitHub** | **Nguyễn Văn Huỳnh** | Cả nhóm | • Fork repo `jameskokoska/Cashew` sang `hhuynh2005/Cashew`<br>• Cấu hình collaborators & phân quyền nhánh<br>• Hướng dẫn các thành viên clone mã nguồn về local | `huynh-setup-repo` | ✅ Hoàn thành |
-| **2** | **Cài đặt dependencies & cấu hình môi trường** | **Lê Anh Tuấn** | Nguyễn Văn Huỳnh | • Kiểm tra Flutter SDK, Dart SDK tương thích<br>• Chạy `flutter pub get` trong thư mục `budget`<br>• Khắc phục cảnh báo/lỗi thư viện & chuẩn hóa môi trường local | `letuan-setup-dependencies` | ✅ Hoàn thành |
-| **3** | **Khởi chạy local & kiểm tra chức năng cơ bản (CRUD)** | **Lê Anh Tuấn** | NGUYỄN TRUNG KIÊN, Trần Anh Tuấn | • Chạy ứng dụng trên Emulator / thiết bị thật / Web<br>• Kiểm thử chức năng: Thêm, Sửa, Xóa chi tiêu<br>• Kiểm thử số dư, danh mục và biểu đồ báo cáo<br>• Chụp ảnh minh chứng lưu tại `screenshots/crud/` | `letuan-test-crud` | 🔄 Đang hoàn thiện |
+| **2** | **Cài đặt dependencies & cấu hình môi trường** | **Lê Anh Tuấn** | Nguyễn Văn Huỳnh | • Kiểm tra Flutter SDK (v3.47.5), Dart SDK, Android SDK 36<br>• Chạy `flutter pub get` trong thư mục `budget`<br>• Viết báo cáo cài đặt & xử lý dependencies tại [`SETUP_ENVIRONMENT.md`](SETUP_ENVIRONMENT.md) | `letuan-setup-dependencies` | ✅ Hoàn thành |
+| **3** | **Khởi chạy local & kiểm tra chức năng cơ bản (CRUD)** | **Lê Anh Tuấn** | NGUYỄN TRUNG KIÊN, Trần Anh Tuấn | • Chạy ứng dụng trên Emulator / thiết bị thật / Web<br>• Kiểm thử chức năng: Thêm, Sửa, Xóa chi tiêu<br>• Kiểm thử số dư, hạn mức danh mục và biểu đồ báo cáo<br>• Chụp 5 ảnh minh chứng lưu tại `screenshots/crud/` | `letuan-test-crud` | ✅ Hoàn thành |
 | **4** | **Tùy chỉnh tính năng hoặc thay đổi giao diện (UI)** | **NGUYỄN TRUNG KIÊN** (UI)<br>**Trần Anh Tuấn** (Tính năng) | Nguyễn Văn Huỳnh (Review & Merge) | • **UI (Kiên):** Tùy chỉnh thông tin nhóm tại Settings/About, đổi màu sắc chủ đạo sang Emerald `#00796B`, đổi banner nhận diện nhóm.<br>• **Tính năng (Tuấn):** Bổ sung danh mục chi tiêu học tập sinh viên, định dạng tiền tệ mặc định VNĐ, tối ưu hóa bộ lọc chi tiêu.<br>• Đã hoàn thành, review code và merge vào nhánh `main`. | `kien-custom-ui-branding`<br>`trantuan-custom-currency-vnd`<br>`trantuan-custom-feature` | ✅ Hoàn thành |
 | **5** | **Đóng gói sản phẩm & Nộp bài** | **Nguyễn Văn Huỳnh** | Lê Anh Tuấn, NGUYỄN TRUNG KIÊN, Trần Anh Tuấn | • Đóng gói ứng dụng thành file APK release (`flutter build apk --release`)<br>• Tổng hợp toàn bộ ảnh chụp màn hình minh chứng kết quả<br>• Hoàn thiện README và nộp link GitHub đúng hạn | `huynh-build-release` | 🔄 Đang triển khai |
 
@@ -41,7 +41,7 @@
 | Thành Viên | Tiền Tố Tên | Tên Nhánh Khi Push Code | Mục Đích / Chức Năng Phụ Trách | Trạng Thái Nhánh |
 |---|:---:|:---|:---|:---:|
 | **Nguyễn Văn Huỳnh** | `huynh-` | `huynh-setup-repo`<br>`huynh-build-release` | • Cấu hình dự án, quản lý repo<br>• Đóng gói APK và hoàn thiện tài liệu nộp bài | ✅ Đã merge<br>🔄 Đang triển khai |
-| **Lê Anh Tuấn** | `letuan-` | `letuan-setup-dependencies`<br>`letuan-test-crud` | • Thiết lập thư viện và tài liệu môi trường<br>• Thực hiện và ghi log kiểm thử Thêm/Sửa/Xóa giao dịch | 🔄 Đang thực hiện<br>🔄 Đang thực hiện |
+| **Lê Anh Tuấn** | `letuan-` | `letuan-setup-dependencies`<br>`letuan-test-crud` | • Thiết lập thư viện và tài liệu môi trường<br>• Thực hiện và ghi log kiểm thử Thêm/Sửa/Xóa giao dịch | ✅ Đã merge<br>✅ Đã merge |
 | **NGUYỄN TRUNG KIÊN** | `kien-` | `kien-custom-ui-branding`<br>`kien-custom-theme` | • Tùy chỉnh giao diện: màn hình giới thiệu nhóm, logo, banner<br>• Tùy biến màu sắc, theme theo nhận diện nhóm | ✅ Đã merge<br>✅ Đã merge |
 | **Trần Anh Tuấn** | `trantuan-` | `trantuan-custom-currency-vnd`<br>`trantuan-custom-feature` | • Tùy chỉnh tiền tệ VNĐ mặc định, format số tiền<br>• Thêm danh mục chi tiêu sinh viên & cải tiến bộ lọc | ✅ Đã merge<br>✅ Đã merge |
 
@@ -139,6 +139,16 @@ git push origin letuan-test-crud
 
 Toàn bộ ảnh chụp màn hình kết quả chạy và kiểm thử ứng dụng được lưu trữ tại thư mục `screenshots/`:
 
+### 🧪 6.1. Minh Chứng Kiểm Thử Chức Năng Cơ Bản (CRUD) - Thực hiện: Lê Anh Tuấn
+| Tên File Ảnh | Nội Dung Kiểm Thử | Trạng Thái | Đường Dẫn Tệp |
+|:---|:---|:---:|:---:|
+| `01_create_expense.png` | Kiểm thử thêm mới khoản chi tiêu giao dịch | ✅ Đạt | [`screenshots/crud/01_create_expense.png`](screenshots/crud/01_create_expense.png) |
+| `02_update_expense.png` | Kiểm thử chỉnh sửa thông tin khoản chi tiêu | ✅ Đạt | [`screenshots/crud/02_update_expense.png`](screenshots/crud/02_update_expense.png) |
+| `03_delete_expense.png` | Kiểm thử xóa khoản chi tiêu khỏi hệ thống | ✅ Đạt | [`screenshots/crud/03_delete_expense.png`](screenshots/crud/03_delete_expense.png) |
+| `04_categories_budget.png` | Kiểm tra giao diện danh mục & hạn mức ngân sách | ✅ Đạt | [`screenshots/crud/04_categories_budget.png`](screenshots/crud/04_categories_budget.png) |
+| `05_analytics_chart.png` | Kiểm tra biểu đồ phân tích chi tiêu & cập nhật số dư | ✅ Đạt | [`screenshots/crud/05_analytics_chart.png`](screenshots/crud/05_analytics_chart.png) |
+
+### 🎨 6.2. Minh Chứng Tùy Chỉnh Giao Diện & Tính Năng - Thực hiện: Kiên & Tuấn
 | Tên File Ảnh | Nội Dung Minh Chứng | Người Thực Hiện | Đường Dẫn Tệp |
 |:---|:---|:---:|:---:|
 | `setting.png` | Banner nhận diện đồ án & nhóm trên trang Cài đặt | Nguyễn Trung Kiên | [`screenshots/customization/setting.png`](screenshots/customization/setting.png) |
@@ -146,7 +156,6 @@ Toàn bộ ảnh chụp màn hình kết quả chạy và kiểm thử ứng d�
 | `home.png` | Giao diện chính màn hình Home với Theme màu Emerald mới | Nguyễn Trung Kiên | [`screenshots/customization/home.png`](screenshots/customization/home.png) |
 | `defaultmoney.png` | Cấu hình tiền tệ mặc định sang VNĐ (Việt Nam Đồng) | Trần Anh Tuấn | [`screenshots/customization/defaultmoney.png`](screenshots/customization/defaultmoney.png) |
 | `student_categories.png` | Danh mục chi tiêu học tập - sinh hoạt cho sinh viên | Trần Anh Tuấn | [`screenshots/customization/student_categories.png`](screenshots/customization/student_categories.png) |
-| `crud/` | Thư mục chứa ảnh chụp minh chứng kiểm thử CRUD | Lê Anh Tuấn | `screenshots/crud/` |
 | `build/` | Thư mục chứa ảnh chụp minh chứng build ứng dụng & APK | Nguyễn Văn Huỳnh | `screenshots/build/` |
 
 ---
