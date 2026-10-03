@@ -1,3 +1,4 @@
+import 'package:budget/features/study_documents/study_documents.dart';
 import 'package:budget/functions.dart';
 import 'package:budget/pages/accountsPage.dart';
 import 'package:budget/pages/autoTransactionsPageEmail.dart';
@@ -113,32 +114,12 @@ class App extends StatelessWidget {
       themeAnimationDuration: Duration(milliseconds: 400),
       themeAnimationCurve: CustomDelayedCurve(),
       key: ValueKey('CashewAppMain'),
-      title: 'Cashew',
+      title: 'Quản lý học tập',
       theme: getLightTheme(),
       darkTheme: getDarkTheme(),
       scrollBehavior: ScrollBehaviorOverride(),
       themeMode: getSettingConstants(appStateSettings)["theme"],
-      home: HandleWillPopScope(
-        child: Stack(
-          children: [
-            Row(
-              children: [
-                NavigationSidebar(key: sidebarStateKey),
-                Expanded(
-                    child: Stack(
-                  children: [
-                    InitialPageRouteNavigator(),
-                    GlobalSnackbar(key: snackbarKey),
-                  ],
-                )),
-              ],
-            ),
-            EnableSignInWithGoogleFlyIn(),
-            GlobalLoadingIndeterminate(key: loadingIndeterminateKey),
-            GlobalLoadingProgress(key: loadingProgressKey),
-          ],
-        ),
-      ),
+      home: const StudyDocumentsPage(),
       builder: (context, child) {
         if (kReleaseMode) {
           ErrorWidget.builder = (FlutterErrorDetails errorDetails) {
