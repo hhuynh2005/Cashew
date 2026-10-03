@@ -1,3 +1,20 @@
+# 📚 BÀI THỰC HÀNH 1 (TH1): XÂY DỰNG ỨNG DỤNG QUẢN LÝ TÀI LIỆU HỌC TẬP THEO KIẾN TRÚC CASHEW
+
+> 📌 **Sinh viên thực hiện:** **Nguyễn Văn Huỳnh** — **MSSV: 2351170599** (Lớp 65KTPM - Đại học Thủy Lợi)  
+> 📁 **Mã nguồn ứng dụng:** [`study_docs_app/`](study_docs_app/)  
+> 📦 **Gói phát hành đóng gói:** [`StudyDocs-Cashew-Release.zip`](StudyDocs-Cashew-Release.zip) (Web/PWA Release)  
+> 📑 **Báo cáo giải trình kiến trúc chi tiết:** [`BAO_CAO_TH1_KIEN_TRUC_CASHEW.md`](BAO_CAO_TH1_KIEN_TRUC_CASHEW.md)  
+> 🧪 **Kiểm thử tự động:** `29/29 tests passed 100%` (Unit tests, Integration tests, Widget tests)
+
+### 📋 Đối soát hoàn thành Checklist 5 mục TH1:
+1. ✅ **Checklist 1:** Phân tích yêu cầu chức năng, vẽ sơ đồ luồng dữ liệu (DFD mức 0, mức 1) và Sequence Diagram.
+2. ✅ **Checklist 2:** Thiết lập cấu trúc thư mục phân tầng chuẩn Cashew: `database/` (Data Access), `struct/` (Domain/Logic), `pages/` (Screens), `widgets/` (UI components).
+3. ✅ **Checklist 3:** Triển khai đầy đủ CRUD (Thêm, Sửa, Xóa lưu `delete_logs`) và Tìm kiếm trực tiếp bỏ dấu tiếng Việt.
+4. ✅ **Checklist 4:** Viết bộ test tự động 29 kịch bản kiểm thử tính đúng đắn của việc phân tách logic giữa các tầng (100% PASS).
+5. ✅ **Checklist 5:** Đóng gói bản phát hành `StudyDocs-Cashew-Release.zip` và viết báo cáo giải trình hoàn chỉnh [`BAO_CAO_TH1_KIEN_TRUC_CASHEW.md`](BAO_CAO_TH1_KIEN_TRUC_CASHEW.md).
+
+---
+
 # 📱 ĐỒ ÁN MÔN HỌC: XÂY DỰNG ỨNG DỤNG QUẢN LÝ CHI TIÊU CASHEW
 
 > **Dự án:** Triển khai, kiểm thử và tùy chỉnh ứng dụng quản lý chi tiêu cá nhân dựa trên mã nguồn mở **Cashew**  
