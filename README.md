@@ -2,6 +2,8 @@
 
 > 📌 **Sinh viên thực hiện:** **Nguyễn Văn Huỳnh** — **MSSV: 2351170599** (Lớp 65KTPM - Đại học Thủy Lợi)  
 > 📁 **Mã nguồn ứng dụng:** [`study_docs_app/`](study_docs_app/)  
+> 🌐 **GitHub Repository:** [https://github.com/hhuynh2005/cse441_TH1](https://github.com/hhuynh2005/cse441_TH1)  
+> 🔗 **Báo cáo trực tuyến (Google Docs):** [Xem Báo Cáo Google Docs](https://docs.google.com/document/d/18xAiB17bQfPPKuv4BUYTlD_U0brH_L7sXH0vrDvLkhQ/edit?tab=t.0)  
 > 📦 **Gói phát hành đóng gói:** [`StudyDocs-Cashew-Release.zip`](StudyDocs-Cashew-Release.zip) (Web/PWA Release)  
 > 📑 **Báo cáo giải trình kiến trúc chi tiết:** [`BAO_CAO_TH1_KIEN_TRUC_CASHEW.md`](BAO_CAO_TH1_KIEN_TRUC_CASHEW.md)  
 > 🧪 **Kiểm thử tự động:** `29/29 tests passed 100%` (Unit tests, Integration tests, Widget tests)
