@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1034919492917",
+    "project_id": "cashew-study",
+    "storage_bucket": "cashew-study.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1034919492917:android:ebeba0ee17687766d9607c",
+        "android_client_info": {
+          "package_name": "vn.edu.tlu.study_docs_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDG9LlM-R9aA2D9zYmlGQ_dqdo4D39WQI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
