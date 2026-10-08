@@ -304,3 +304,112 @@ extension DocumentPriorityExtension on DocumentPriority {
     }
   }
 }
+
+/// Trạng thái đồng bộ đám mây (Cloud Sync Status)
+/// Phụ trách: NGUYỄN TRUNG KIÊN (MSV: 2251172394) - Module Cloud UI & Badges
+enum CloudSyncStatus {
+  synced, // Đã đồng bộ lên Cloud Storage
+  syncing, // Đang trong tiến trình truyền tải dữ liệu
+  pending, // Chờ đồng bộ (Local pending upload)
+  offline, // Chế độ ngoại tuyến (Chỉ lưu cục bộ SQLite)
+  error, // Lỗi trong quá trình đồng bộ
+}
+
+extension CloudSyncStatusExtension on CloudSyncStatus {
+  String get id {
+    switch (this) {
+      case CloudSyncStatus.synced:
+        return 'synced';
+      case CloudSyncStatus.syncing:
+        return 'syncing';
+      case CloudSyncStatus.pending:
+        return 'pending';
+      case CloudSyncStatus.offline:
+        return 'offline';
+      case CloudSyncStatus.error:
+        return 'error';
+    }
+  }
+
+  String get displayName {
+    switch (this) {
+      case CloudSyncStatus.synced:
+        return 'Đã đồng bộ Cloud';
+      case CloudSyncStatus.syncing:
+        return 'Đang đồng bộ...';
+      case CloudSyncStatus.pending:
+        return 'Chờ tải lên';
+      case CloudSyncStatus.offline:
+        return 'Lưu cục bộ (Offline)';
+      case CloudSyncStatus.error:
+        return 'Lỗi đồng bộ';
+    }
+  }
+
+  String get shortLabel {
+    switch (this) {
+      case CloudSyncStatus.synced:
+        return 'Cloud Sync';
+      case CloudSyncStatus.syncing:
+        return 'Đồng bộ';
+      case CloudSyncStatus.pending:
+        return 'Chờ tải';
+      case CloudSyncStatus.offline:
+        return 'Ngoại tuyến';
+      case CloudSyncStatus.error:
+        return 'Lỗi Cloud';
+    }
+  }
+
+  IconData get icon {
+    switch (this) {
+      case CloudSyncStatus.synced:
+        return Icons.cloud_done_rounded;
+      case CloudSyncStatus.syncing:
+        return Icons.cloud_sync_rounded;
+      case CloudSyncStatus.pending:
+        return Icons.cloud_upload_outlined;
+      case CloudSyncStatus.offline:
+        return Icons.cloud_off_rounded;
+      case CloudSyncStatus.error:
+        return Icons.sync_problem_rounded;
+    }
+  }
+
+  Color get color {
+    switch (this) {
+      case CloudSyncStatus.synced:
+        return const Color(0xFF00796B); // Emerald
+      case CloudSyncStatus.syncing:
+        return const Color(0xFF0288D1); // Blue
+      case CloudSyncStatus.pending:
+        return const Color(0xFFF57C00); // Amber/Orange
+      case CloudSyncStatus.offline:
+        return const Color(0xFF78909C); // Slate Grey
+      case CloudSyncStatus.error:
+        return const Color(0xFFD32F2F); // Red
+    }
+  }
+
+  Color get backgroundColor {
+    return color.withValues(alpha: 0.12);
+  }
+
+  static CloudSyncStatus fromString(String? val) {
+    switch (val?.toLowerCase()) {
+      case 'synced':
+        return CloudSyncStatus.synced;
+      case 'syncing':
+        return CloudSyncStatus.syncing;
+      case 'pending':
+        return CloudSyncStatus.pending;
+      case 'offline':
+        return CloudSyncStatus.offline;
+      case 'error':
+        return CloudSyncStatus.error;
+      default:
+        return CloudSyncStatus.synced;
+    }
+  }
+}
+

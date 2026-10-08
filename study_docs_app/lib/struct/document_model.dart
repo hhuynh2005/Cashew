@@ -19,6 +19,22 @@ class Document {
   final List<String> tags;
   final DateTime dateCreated;
   final DateTime dateModified;
+  final CloudSyncStatus? _explicitSyncStatus;
+
+  /// Trạng thái đồng bộ đám mây (Cloud Sync)
+  CloudSyncStatus get cloudSyncStatus {
+    final explicit = _explicitSyncStatus;
+    if (explicit != null) return explicit;
+    final url = fileUrl;
+    if (url != null && url.trim().isNotEmpty) {
+      return CloudSyncStatus.synced;
+    }
+    final path = filePath;
+    if (path != null && path.trim().isNotEmpty) {
+      return CloudSyncStatus.pending;
+    }
+    return CloudSyncStatus.offline;
+  }
 
   Document({
     required this.id,
@@ -37,9 +53,11 @@ class Document {
     List<String>? tags,
     DateTime? dateCreated,
     DateTime? dateModified,
+    CloudSyncStatus? cloudSyncStatus,
   })  : tags = tags ?? const [],
         dateCreated = dateCreated ?? DateTime.now(),
-        dateModified = dateModified ?? DateTime.now();
+        dateModified = dateModified ?? DateTime.now(),
+        _explicitSyncStatus = cloudSyncStatus;
 
   /// Chuyển đổi sang Map để lưu trữ trong SQLite
   Map<String, dynamic> toMap() {
@@ -100,6 +118,9 @@ class Document {
       dateModified: map['date_modified'] != null
           ? DateTime.tryParse(map['date_modified'] as String) ?? DateTime.now()
           : DateTime.now(),
+      cloudSyncStatus: map['cloud_sync_status'] != null
+          ? CloudSyncStatusExtension.fromString(map['cloud_sync_status'] as String?)
+          : null,
     );
   }
 
@@ -121,6 +142,7 @@ class Document {
     List<String>? tags,
     DateTime? dateCreated,
     DateTime? dateModified,
+    CloudSyncStatus? cloudSyncStatus,
   }) {
     return Document(
       id: id ?? this.id,
@@ -139,6 +161,7 @@ class Document {
       tags: tags ?? this.tags,
       dateCreated: dateCreated ?? this.dateCreated,
       dateModified: dateModified ?? this.dateModified,
+      cloudSyncStatus: cloudSyncStatus ?? this.cloudSyncStatus,
     );
   }
 

@@ -5,6 +5,7 @@ import '../functions.dart';
 import '../struct/document_enums.dart';
 import '../struct/document_model.dart';
 import '../struct/document_state_provider.dart';
+import '../widgets/cloud_sync_badge.dart';
 import '../widgets/confirm_dialog.dart';
 import 'add_edit_document_page.dart';
 
@@ -245,6 +246,16 @@ class DocumentDetailPage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Column(
                 children: [
+                  _buildDetailWidgetRow(
+                    context,
+                    icon: document.cloudSyncStatus.icon,
+                    iconColor: document.cloudSyncStatus.color,
+                    label: 'Đồng bộ Đám mây Cloud',
+                    trailing: CloudSyncBadge(
+                      status: document.cloudSyncStatus,
+                    ),
+                  ),
+                  const Divider(height: 1),
                   _buildDetailRow(
                     context,
                     icon: document.documentType.icon,
@@ -406,4 +417,26 @@ class DocumentDetailPage extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildDetailWidgetRow(
+    BuildContext context, {
+    required IconData icon,
+    required Color iconColor,
+    required String label,
+    required Widget trailing,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        children: [
+          Icon(icon, color: iconColor, size: 20),
+          const SizedBox(width: 12),
+          Text(label, style: const TextStyle(fontSize: 13, color: Colors.grey)),
+          const Spacer(),
+          trailing,
+        ],
+      ),
+    );
+  }
 }
+

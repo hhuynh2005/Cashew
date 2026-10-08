@@ -5,6 +5,7 @@ import '../functions.dart';
 import '../struct/document_enums.dart';
 import '../struct/document_model.dart';
 import '../struct/document_state_provider.dart';
+import 'cloud_sync_badge.dart';
 
 /// Thẻ hiển thị Tài liệu học tập theo phong cách Material 3 / Cashew
 class DocumentCard extends StatelessWidget {
@@ -185,6 +186,13 @@ class DocumentCard extends StatelessWidget {
                         color: statusColor,
                       ),
                     ),
+                  ),
+                  const SizedBox(width: 8),
+
+                  // Huy hiệu Cloud Sync Badge (Nguyễn Trung Kiên)
+                  CloudSyncBadge(
+                    status: document.cloudSyncStatus,
+                    compact: false,
                   ),
 
                   const Spacer(),

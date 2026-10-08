@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -7,7 +8,9 @@ import '../widgets/confirm_dialog.dart';
 import '../widgets/document_card.dart';
 import '../widgets/empty_state_view.dart';
 import '../widgets/filter_chip_bar.dart';
+import '../widgets/offline_mode_indicator.dart';
 import '../widgets/stat_summary_card.dart';
+import '../widgets/user_profile_header.dart';
 import 'about_app_page.dart';
 import 'add_edit_document_page.dart';
 import 'document_detail_page.dart';
@@ -26,6 +29,7 @@ class HomeDashboardPage extends StatefulWidget {
 
 class _HomeDashboardPageState extends State<HomeDashboardPage> {
   int _navIndex = 0;
+  bool _isOfflineMode = false;
 
   @override
   Widget build(BuildContext context) {
@@ -70,12 +74,66 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
           ],
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.account_circle_rounded),
-            tooltip: 'Xác thực Google Cloud (Nhóm 16)',
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const LoginPage()),
+          StreamBuilder<User?>(
+            stream: FirebaseAuth.instance.authStateChanges(),
+            builder: (context, snapshot) {
+              final user = snapshot.data;
+              if (user != null) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(20),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const LoginPage()),
+                      );
+                    },
+                    child: Tooltip(
+                      message: 'Hồ sơ: ${user.displayName ?? user.email}',
+                      child: Stack(
+                        alignment: Alignment.bottomRight,
+                        children: [
+                          CircleAvatar(
+                            radius: 17,
+                            backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.15),
+                            backgroundImage: user.photoURL != null && user.photoURL!.isNotEmpty
+                                ? NetworkImage(user.photoURL!)
+                                : null,
+                            child: user.photoURL == null || user.photoURL!.isEmpty
+                                ? Text(
+                                    user.displayName?.isNotEmpty == true
+                                        ? user.displayName![0].toUpperCase()
+                                        : 'U',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                      color: theme.colorScheme.primary,
+                                    ),
+                                  )
+                                : null,
+                          ),
+                          Container(
+                            width: 10,
+                            height: 10,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF00E676),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }
+              return IconButton(
+                icon: const Icon(Icons.account_circle_rounded),
+                tooltip: 'Xác thực Google Cloud (Nhóm 16)',
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const LoginPage()),
+                  );
+                },
               );
             },
           ),
@@ -162,6 +220,30 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
               },
               child: CustomScrollView(
                 slivers: [
+                  // 0. Chỉ báo trạng thái Cloud và Ngoại tuyến (Nguyễn Trung Kiên)
+                  SliverToBoxAdapter(
+                    child: OfflineModeIndicator(
+                      isOffline: _isOfflineMode,
+                      onToggleOffline: (val) {
+                        setState(() => _isOfflineMode = val);
+                      },
+                      pendingSyncCount: provider.allDocuments
+                          .where((d) => d.cloudSyncStatus == CloudSyncStatus.pending)
+                          .length,
+                    ),
+                  ),
+
+                  // 0.1 Thẻ thông tin người dùng Google Cloud Profile (Nguyễn Trung Kiên)
+                  SliverToBoxAdapter(
+                    child: UserProfileHeader(
+                      onOpenAuthPage: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const LoginPage()),
+                        );
+                      },
+                    ),
+                  ),
+
                   // 1. Thẻ chào mừng sinh viên & môn học
                   SliverToBoxAdapter(
                     child: Padding(
