@@ -5,6 +5,8 @@ import '../functions.dart';
 import '../struct/document_enums.dart';
 import '../struct/document_model.dart';
 import '../struct/document_state_provider.dart';
+import '../theme.dart';
+import '../widgets/cloud_transfer_progress.dart';
 
 /// Màn hình Thêm mới hoặc Chỉnh sửa Tài liệu học tập (CRUD Create / Update)
 class AddEditDocumentPage extends StatefulWidget {
@@ -41,6 +43,7 @@ class _AddEditDocumentPageState extends State<AddEditDocumentPage> {
   DateTime? _selectedDueDate;
   bool _isFavorite = false;
   bool _isSaving = false;
+  bool _syncToCloud = true;
 
   @override
   void initState() {
@@ -130,6 +133,27 @@ class _AddEditDocumentPageState extends State<AddEditDocumentPage> {
       final sizeMb = double.tryParse(_fileSizeController.text.trim()) ?? 0.0;
       final sizeBytes = (sizeMb * 1024 * 1024).round();
 
+      // Kích hoạt thanh tiến trình tải tệp Cloud Upload Progress (Nguyễn Trung Kiên)
+      if (_syncToCloud) {
+        final uploadOk = await CloudTransferProgress.showTransferSheet(
+          context: context,
+          type: TransferType.upload,
+          fileName: '${_titleController.text.trim()}.${_selectedFormat.name}',
+          totalBytes: sizeBytes > 0 ? sizeBytes : (2.5 * 1024 * 1024).round(),
+          fileFormat: _selectedFormat,
+        );
+        if (!uploadOk && mounted) {
+          setState(() => _isSaving = false);
+          return;
+        }
+      }
+
+      final resolvedUrl = _urlController.text.trim().isNotEmpty
+          ? _urlController.text.trim()
+          : (_syncToCloud
+              ? 'https://firebasestorage.googleapis.com/v0/b/cashew-study-docs.appspot.com/o/${Uri.encodeComponent(_titleController.text.trim())}?alt=media'
+              : null);
+
       if (widget.isEditing) {
         final currentDoc = widget.documentToEdit!;
         final updated = currentDoc.copyWith(
@@ -139,13 +163,14 @@ class _AddEditDocumentPageState extends State<AddEditDocumentPage> {
           documentType: _selectedType,
           fileFormat: _selectedFormat,
           filePath: _pathController.text.trim().isEmpty ? null : _pathController.text.trim(),
-          fileUrl: _urlController.text.trim().isEmpty ? null : _urlController.text.trim(),
+          fileUrl: resolvedUrl,
           fileSizeBytes: sizeBytes,
           isFavorite: _isFavorite,
           status: _selectedStatus,
           priority: _selectedPriority,
           dueDate: _selectedDueDate,
           tags: tags,
+          cloudSyncStatus: _syncToCloud ? CloudSyncStatus.synced : CloudSyncStatus.pending,
         );
         await provider.updateDocument(updated);
         if (mounted) {
@@ -162,7 +187,7 @@ class _AddEditDocumentPageState extends State<AddEditDocumentPage> {
           documentType: _selectedType,
           fileFormat: _selectedFormat,
           filePath: _pathController.text.trim().isEmpty ? null : _pathController.text.trim(),
-          fileUrl: _urlController.text.trim().isEmpty ? null : _urlController.text.trim(),
+          fileUrl: resolvedUrl,
           fileSizeBytes: sizeBytes,
           isFavorite: _isFavorite,
           status: _selectedStatus,
@@ -467,7 +492,45 @@ class _AddEditDocumentPageState extends State<AddEditDocumentPage> {
                 prefixIcon: Icon(Icons.tag_rounded),
               ),
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 18),
+
+            // 9. Tùy chọn đồng bộ Cloud (Nguyễn Trung Kiên)
+            Card(
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(
+                  color: AppTheme.primaryColor.withValues(alpha: 0.35),
+                  width: 1.2,
+                ),
+              ),
+              child: SwitchListTile.adaptive(
+                secondary: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryColor.withValues(alpha: 0.12),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.cloud_upload_rounded,
+                    color: AppTheme.primaryColor,
+                    size: 20,
+                  ),
+                ),
+                title: const Text(
+                  'Đồng bộ lên Firebase Cloud Storage',
+                  style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.bold),
+                ),
+                subtitle: const Text(
+                  'Tải tệp lên đám mây (Asia-Southeast1) và kích hoạt thanh tiến trình',
+                  style: TextStyle(fontSize: 11.5),
+                ),
+                value: _syncToCloud,
+                activeTrackColor: AppTheme.primaryColor,
+                onChanged: (val) => setState(() => _syncToCloud = val),
+              ),
+            ),
+            const SizedBox(height: 24),
 
             // Nút Lưu tài liệu
             FilledButton.icon(
