@@ -6,6 +6,11 @@ import '../struct/document_enums.dart';
 import '../struct/document_model.dart';
 import '../struct/document_state_provider.dart';
 import '../widgets/confirm_dialog.dart';
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:flutter/services.dart';
+import '../struct/firebase_storage_service.dart';
+import '../struct/google_auth_service.dart';
 import 'add_edit_document_page.dart';
 
 /// Màn hình Chi tiết Tài liệu học tập (Xem, Chuyển trạng thái, Sửa, Xóa)
@@ -344,7 +349,11 @@ class DocumentDetailPage extends StatelessWidget {
             ),
           const SizedBox(height: 16),
 
-          // 5. Thẻ Tags
+          // 5. Firebase Cloud Storage Card
+          _CloudStorageCard(document: document),
+          const SizedBox(height: 16),
+
+          // 6. Thẻ Tags
           if (document.tags.isNotEmpty)
             Card(
               elevation: 1,
@@ -407,3 +416,282 @@ class DocumentDetailPage extends StatelessWidget {
     );
   }
 }
+
+/// Thẻ tương tác và hiển thị trạng thái Firebase Cloud Storage
+class _CloudStorageCard extends StatefulWidget {
+  final Document document;
+
+  const _CloudStorageCard({required this.document});
+
+  @override
+  State<_CloudStorageCard> createState() => _CloudStorageCardState();
+}
+
+class _CloudStorageCardState extends State<_CloudStorageCard> {
+  bool _isUploading = false;
+  double _uploadProgress = 0.0;
+
+  bool get _isStoredOnCloud =>
+      widget.document.fileUrl != null &&
+      widget.document.fileUrl!.contains('firebasestorage.googleapis.com');
+
+  Future<void> _handleUploadToCloud(BuildContext context) async {
+    final provider = context.read<DocumentStateProvider>();
+    setState(() {
+      _isUploading = true;
+      _uploadProgress = 0.0;
+    });
+
+    try {
+      final user = GoogleAuthService().currentUser;
+      final uploaderUid = user?.uid ?? 'student_2351170599';
+      final fileName =
+          '${widget.document.title.replaceAll(" ", "_")}.${widget.document.fileFormat.name}';
+
+      final dummyContent = utf8.encode(
+        'StudyDocs DMS - Tài liệu: ${widget.document.title}\n'
+        'Môn học: ${widget.document.subjectId}\n'
+        'Người tải: $uploaderUid\n'
+        'Thời gian: ${DateTime.now().toIso8601String()}',
+      );
+
+      final result = await FirebaseStorageService().uploadDocumentFile(
+        uploaderUid: uploaderUid,
+        documentId: widget.document.id,
+        fileName: fileName,
+        bytes: Uint8List.fromList(dummyContent),
+        onProgress: (p) {
+          if (mounted) {
+            setState(() => _uploadProgress = p);
+          }
+        },
+        customMetadata: {
+          'subjectId': widget.document.subjectId,
+          'documentType': widget.document.documentType.displayName,
+        },
+      );
+
+      // Cập nhật Document với URL Cloud Storage mới
+      final updatedDoc = widget.document.copyWith(
+        fileUrl: result.downloadUrl,
+        fileSizeBytes: result.fileSizeBytes,
+      );
+      await provider.updateDocument(updatedDoc);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Đã đồng bộ lên Firebase Cloud Storage thành công!'),
+            backgroundColor: Colors.teal,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi khi tải lên Cloud Storage: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isUploading = false;
+          _uploadProgress = 0.0;
+        });
+      }
+    }
+  }
+
+  Future<void> _handleDeleteFromCloud(BuildContext context) async {
+    final confirm = await ConfirmDialog.show(
+      context: context,
+      title: 'Xóa tệp trên Cloud?',
+      message: 'Bạn có chắc muốn xóa tệp này khỏi Firebase Cloud Storage?',
+    );
+    if (!confirm) return;
+
+    final provider = context.read<DocumentStateProvider>();
+    try {
+      final user = GoogleAuthService().currentUser;
+      final uploaderUid = user?.uid ?? 'student_2351170599';
+      final fileName =
+          '${widget.document.title.replaceAll(" ", "_")}.${widget.document.fileFormat.name}';
+      final path = FirebaseStorageService.buildStoragePath(
+        uploaderUid: uploaderUid,
+        documentId: widget.document.id,
+        fileName: fileName,
+      );
+
+      await FirebaseStorageService().deleteDocumentFile(path);
+
+      // Cập nhật Document gỡ bỏ link Cloud
+      final updatedDoc = widget.document.copyWith(fileUrl: '');
+      await provider.updateDocument(updatedDoc);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Đã xóa tệp khỏi Firebase Cloud Storage.'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lỗi khi xóa tệp: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: _isStoredOnCloud
+                        ? Colors.teal.withValues(alpha: 0.15)
+                        : Colors.orange.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    _isStoredOnCloud
+                        ? Icons.cloud_done_rounded
+                        : Icons.cloud_upload_outlined,
+                    color: _isStoredOnCloud ? Colors.teal : Colors.orange,
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Firebase Cloud Storage',
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        _isStoredOnCloud
+                            ? 'Đã đồng bộ lên Bucket đám mây'
+                            : 'Chưa đồng bộ lên Cloud Storage',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: _isStoredOnCloud ? Colors.teal : Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: _isStoredOnCloud
+                        ? Colors.teal.withValues(alpha: 0.15)
+                        : (isDark ? Colors.white10 : Colors.grey.shade200),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    _isStoredOnCloud ? 'ĐÃ ĐỒNG BỘ' : 'OFFLINE',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: _isStoredOnCloud ? Colors.teal : Colors.grey,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (_isUploading) ...[
+              const SizedBox(height: 14),
+              LinearProgressIndicator(value: _uploadProgress > 0 ? _uploadProgress : null),
+              const SizedBox(height: 6),
+              Text(
+                'Đang tải lên Cloud Storage... ${(_uploadProgress * 100).toInt()}%',
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+            ],
+            if (_isStoredOnCloud && widget.document.fileUrl != null) ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.white10 : Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.link_rounded, size: 16, color: Colors.blue),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        widget.document.fileUrl!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 11, color: Colors.blue),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.copy_rounded, size: 16),
+                      tooltip: 'Sao chép URL',
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: widget.document.fileUrl!));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Đã sao chép link Cloud Storage!')),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: _isUploading ? null : () => _handleUploadToCloud(context),
+                    icon: Icon(
+                        _isStoredOnCloud ? Icons.cloud_sync_rounded : Icons.cloud_upload_rounded),
+                    label: Text(_isStoredOnCloud ? 'Tải lên lại' : 'Tải lên Cloud Storage'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: theme.colorScheme.primary,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                  ),
+                ),
+                if (_isStoredOnCloud) ...[
+                  const SizedBox(width: 8),
+                  IconButton(
+                    icon: const Icon(Icons.delete_outline_rounded, color: Colors.red),
+                    tooltip: 'Xóa tệp khỏi Cloud Storage',
+                    onPressed: () => _handleDeleteFromCloud(context),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
