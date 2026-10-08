@@ -12,6 +12,7 @@ import 'about_app_page.dart';
 import 'add_edit_document_page.dart';
 import 'document_detail_page.dart';
 import 'document_list_page.dart';
+import 'login_page.dart';
 import 'search_document_page.dart';
 import 'subjects_manage_page.dart';
 
@@ -69,6 +70,15 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
           ],
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.account_circle_rounded),
+            tooltip: 'Xác thực Google Cloud (Nhóm 16)',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const LoginPage()),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.search_rounded),
             tooltip: 'Tìm kiếm tài liệu',
