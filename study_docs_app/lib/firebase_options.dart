@@ -50,20 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBNyfHNQlKfZGuE8oNVqtqCA6RV3K6kEd8',
-    appId: '1:1034919492917:web:006def99b55697acd9607c',
-    messagingSenderId: '1034919492917',
-    projectId: 'cashew-study',
-    authDomain: 'cashew-study.firebaseapp.com',
-    storageBucket: 'cashew-study.firebasestorage.app',
-    measurementId: 'G-DG358XQNVE',
+    apiKey: 'AIzaSyCxPNAB6WxjGxAySTlubG09THKMOiwIZKY',
+    appId: '1:825188339992:web:64ee99e1f75034613a0e6d',
+    messagingSenderId: '825188339992',
+    projectId: 'cashew-study-docs-d5b15',
+    authDomain: 'cashew-study-docs-d5b15.firebaseapp.com',
+    storageBucket: 'cashew-study-docs-d5b15.firebasestorage.app',
+    measurementId: 'G-MFFDG761WJ',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBDG9LlM-R9aA2D9zYmlGQ_dqdo4D39WQI',
-    appId: '1:1034919492917:android:ebeba0ee17687766d9607c',
-    messagingSenderId: '1034919492917',
-    projectId: 'cashew-study',
-    storageBucket: 'cashew-study.firebasestorage.app',
+    apiKey: 'AIzaSyCyNMrtBDC24tM03NwYcrXr2PMjSlr91do',
+    appId: '1:825188339992:android:e6605e14dd2778a83a0e6d',
+    messagingSenderId: '825188339992',
+    projectId: 'cashew-study-docs-d5b15',
+    storageBucket: 'cashew-study-docs-d5b15.firebasestorage.app',
   );
 }

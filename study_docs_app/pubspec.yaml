@@ -21,6 +21,9 @@ dependencies:
   shared_preferences: ^2.2.3
   sqflite_common_ffi_web: ^1.2.0
   firebase_core: ^4.15.0
+  cloud_firestore: ^6.10.0
+  firebase_auth: ^6.7.0
+  connectivity_plus: ^7.3.2
 
 dev_dependencies:
   flutter_test:

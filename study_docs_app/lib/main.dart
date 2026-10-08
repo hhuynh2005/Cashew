@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'database/app_database.dart';
+import 'firebase_options.dart';
 import 'pages/home_dashboard_page.dart';
+import 'struct/cloud_sync_service.dart';
 import 'struct/document_repository.dart';
 import 'struct/document_state_provider.dart';
 import 'theme.dart';
@@ -18,6 +21,16 @@ void main() async {
     debugPrint('Database initialization warning: $e');
   }
 
+  CloudSyncService? cloudSync;
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    cloudSync = CloudSyncService(database: appDb);
+  } catch (e) {
+    debugPrint('Firebase initialization warning: $e');
+  }
+
   // Khởi tạo Repository chứa logic nghiệp vụ
   final repository = DocumentRepository(db: appDb);
 
@@ -25,7 +38,10 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => DocumentStateProvider(repository: repository),
+          create: (_) => DocumentStateProvider(
+            repository: repository,
+            cloudSync: cloudSync,
+          ),
         ),
       ],
       child: const StudyDocsCashewApp(),

@@ -14,6 +14,8 @@ class DocumentRepository {
 
   DocumentRepository({AppDatabase? db}) : _db = db ?? AppDatabase.instance;
 
+  bool get databaseIsUsingMemoryFallback => _db.isUsingMemoryFallback;
+
   // ===========================================================================
   // REACTIVE WATCHERS (Chuyển tiếp stream reactive từ Database lên State Provider)
   // ===========================================================================

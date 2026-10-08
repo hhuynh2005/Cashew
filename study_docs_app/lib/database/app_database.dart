@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -22,6 +23,7 @@ class AppDatabase {
 
   static AppDatabase? _instance;
   static Database? _database;
+  Future<Database>? _databaseInitialization;
 
   // Cấu chế Fallback bộ nhớ nếu Web worker / WASM bị chặn bởi trình duyệt
   bool _useMemoryFallback = false;
@@ -45,17 +47,180 @@ class AppDatabase {
     return _instance!;
   }
 
+  Future<void> applySyncedDocument(Document document) async {
+    final db = await database;
+    if (db == null) {
+      _fallbackDocuments.removeWhere((item) => item.id == document.id);
+      _fallbackDocuments.add(document);
+    } else {
+      await db.insert(
+        AppTables.tableDocuments,
+        document.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+    await _notifyWatchers();
+  }
+
+  Future<void> applySyncedSubject(Subject subject) async {
+    final db = await database;
+    if (db == null) {
+      _fallbackSubjects.removeWhere((item) => item.id == subject.id);
+      _fallbackSubjects.add(subject);
+    } else {
+      await db.insert(
+        AppTables.tableSubjects,
+        subject.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+    await _notifyWatchers();
+  }
+
+  Future<void> applySyncedDeleteLog(Map<String, dynamic> log) async {
+    final tableName = log['table_name'] as String?;
+    final itemId = log['item_id'] as String?;
+    final logId = log['id'] as String?;
+    final deletedAt = log['date_deleted'] as String?;
+    final tombstoneAt = DateTime.tryParse(deletedAt ?? '');
+    if ((tableName != AppTables.tableDocuments &&
+            tableName != AppTables.tableSubjects) ||
+        itemId == null ||
+        logId == null ||
+        tombstoneAt == null) {
+      throw const FormatException('Invalid synchronized delete log.');
+    }
+
+    final db = await database;
+    if (db == null) {
+      if (tableName == AppTables.tableDocuments) {
+        _fallbackDocuments.removeWhere(
+          (item) =>
+              item.id == itemId && !item.dateModified.isAfter(tombstoneAt),
+        );
+      } else if (tableName == AppTables.tableSubjects) {
+        final subjectDeleted = _fallbackSubjects.any(
+          (item) =>
+              item.id == itemId && !item.dateModified.isAfter(tombstoneAt),
+        );
+        if (subjectDeleted) {
+          final childIds = _fallbackDocuments
+              .where((item) => item.subjectId == itemId)
+              .map((item) => item.id)
+              .toList();
+          for (final childId in childIds) {
+            _fallbackDeleteLogs.add({
+              'id': _uuid.v4(),
+              'item_id': childId,
+              'table_name': AppTables.tableDocuments,
+              'date_deleted': tombstoneAt.toIso8601String(),
+            });
+          }
+        }
+        _fallbackDocuments.removeWhere(
+          (item) =>
+              item.subjectId == itemId &&
+              !item.dateModified.isAfter(tombstoneAt),
+        );
+        _fallbackSubjects.removeWhere(
+          (item) =>
+              item.id == itemId && !item.dateModified.isAfter(tombstoneAt),
+        );
+      }
+      if (!_fallbackDeleteLogs.any((item) => item['id'] == logId)) {
+        _fallbackDeleteLogs.add(Map<String, dynamic>.from(log));
+      }
+    } else {
+      await db.transaction((txn) async {
+        final logs = await txn.query(
+          AppTables.tableDeleteLogs,
+          where: 'id = ?',
+          whereArgs: [logId],
+          limit: 1,
+        );
+        if (logs.isEmpty) {
+          await txn.insert(AppTables.tableDeleteLogs, log);
+        }
+
+        if (tableName == AppTables.tableDocuments) {
+          final existing = await txn.query(
+            AppTables.tableDocuments,
+            columns: ['date_modified'],
+            where: 'id = ?',
+            whereArgs: [itemId],
+            limit: 1,
+          );
+          if (existing.isNotEmpty) {
+            final modifiedAt = DateTime.tryParse(
+              existing.first['date_modified'] as String? ?? '',
+            );
+            if (modifiedAt == null || !modifiedAt.isAfter(tombstoneAt)) {
+              await txn.delete(
+                AppTables.tableDocuments,
+                where: 'id = ?',
+                whereArgs: [itemId],
+              );
+            }
+          }
+        } else if (tableName == AppTables.tableSubjects) {
+          final existing = await txn.query(
+            AppTables.tableSubjects,
+            columns: ['date_modified'],
+            where: 'id = ?',
+            whereArgs: [itemId],
+            limit: 1,
+          );
+          if (existing.isNotEmpty) {
+            final modifiedAt = DateTime.tryParse(
+              existing.first['date_modified'] as String? ?? '',
+            );
+            if (modifiedAt == null || !modifiedAt.isAfter(tombstoneAt)) {
+              final childDocs = await txn.query(
+                AppTables.tableDocuments,
+                columns: ['id'],
+                where: 'subject_id = ?',
+                whereArgs: [itemId],
+              );
+              for (final child in childDocs) {
+                await txn.insert(AppTables.tableDeleteLogs, {
+                  'id': _uuid.v4(),
+                  'item_id': child['id'],
+                  'table_name': AppTables.tableDocuments,
+                  'date_deleted': deletedAt,
+                });
+              }
+              await txn.delete(
+                AppTables.tableDocuments,
+                where: 'subject_id = ?',
+                whereArgs: [itemId],
+              );
+              await txn.delete(
+                AppTables.tableSubjects,
+                where: 'id = ?',
+                whereArgs: [itemId],
+              );
+            }
+          }
+        }
+      });
+    }
+    await _notifyWatchers();
+  }
+
   /// Cung cấp quyền truy cập Database, tự động khởi tạo nếu chưa có
   Future<Database?> get database async {
     if (_useMemoryFallback) return null;
     if (_database != null && _database!.isOpen) {
       return _database!;
     }
+    final initialization = _databaseInitialization ??= _initDatabase();
     try {
-      _database = await _initDatabase();
+      _database = await initialization;
       return _database!;
     } catch (e) {
-      debugPrint('Database init notice ($e). Kích hoạt chế độ In-Memory Fallback.');
+      debugPrint(
+        'Database init notice ($e). Kích hoạt chế độ In-Memory Fallback.',
+      );
       _useMemoryFallback = true;
       if (_fallbackDocuments.isEmpty) {
         _fallbackDocuments.addAll(MockData.getInitialDocuments());
@@ -64,8 +229,14 @@ class AppDatabase {
         _fallbackSubjects.addAll(MockData.initialSubjects);
       }
       return null;
+    } finally {
+      if (identical(_databaseInitialization, initialization)) {
+        _databaseInitialization = null;
+      }
     }
   }
+
+  bool get isUsingMemoryFallback => _useMemoryFallback;
 
   /// Khởi tạo database với hỗ trợ đa nền tảng (Web, Mobile, Desktop, Test)
   Future<Database> _initDatabase({bool isMemory = false}) async {
@@ -110,7 +281,10 @@ class AppDatabase {
         },
       );
     } catch (e) {
-      debugPrint('Mở DB tại $dbPath không thành công ($e), chuyển sang inMemoryDatabasePath');
+      debugPrint(
+        'Mở DB tại $dbPath không thành công ($e), chuyển sang inMemoryDatabasePath',
+      );
+      _useMemoryFallback = true;
       return await openDatabase(
         inMemoryDatabasePath,
         version: _databaseVersion,
@@ -214,47 +388,57 @@ class AppDatabase {
 
   /// Theo dõi danh sách toàn bộ tài liệu theo thời gian thực (Reactive Stream)
   Stream<List<Document>> watchAllDocuments() {
-    getAllDocuments().then((docs) {
-      if (!_documentsStreamController.isClosed) {
-        _documentsStreamController.add(docs);
-      }
-    }).catchError((err) {
-      debugPrint('watchAllDocuments catchError: $err');
-      if (!_documentsStreamController.isClosed) {
-        _documentsStreamController.add(
-          _fallbackDocuments.isNotEmpty ? _fallbackDocuments : MockData.getInitialDocuments(),
-        );
-      }
-    });
+    getAllDocuments()
+        .then((docs) {
+          if (!_documentsStreamController.isClosed) {
+            _documentsStreamController.add(docs);
+          }
+        })
+        .catchError((err) {
+          debugPrint('watchAllDocuments catchError: $err');
+          if (!_documentsStreamController.isClosed) {
+            _documentsStreamController.add(
+              _fallbackDocuments.isNotEmpty
+                  ? _fallbackDocuments
+                  : MockData.getInitialDocuments(),
+            );
+          }
+        });
     return _documentsStreamController.stream;
   }
 
   /// Theo dõi danh sách môn học theo thời gian thực
   Stream<List<Subject>> watchSubjects() {
-    getAllSubjects().then((subjects) {
-      if (!_subjectsStreamController.isClosed) {
-        _subjectsStreamController.add(subjects);
-      }
-    }).catchError((err) {
-      debugPrint('watchSubjects catchError: $err');
-      if (!_subjectsStreamController.isClosed) {
-        _subjectsStreamController.add(
-          _fallbackSubjects.isNotEmpty ? _fallbackSubjects : MockData.initialSubjects,
-        );
-      }
-    });
+    getAllSubjects()
+        .then((subjects) {
+          if (!_subjectsStreamController.isClosed) {
+            _subjectsStreamController.add(subjects);
+          }
+        })
+        .catchError((err) {
+          debugPrint('watchSubjects catchError: $err');
+          if (!_subjectsStreamController.isClosed) {
+            _subjectsStreamController.add(
+              _fallbackSubjects.isNotEmpty
+                  ? _fallbackSubjects
+                  : MockData.initialSubjects,
+            );
+          }
+        });
     return _subjectsStreamController.stream;
   }
 
   /// Theo dõi số liệu thống kê theo thời gian thực
   Stream<Map<String, int>> watchStats() {
-    getDocumentStats().then((stats) {
-      if (!_statsStreamController.isClosed) {
-        _statsStreamController.add(stats);
-      }
-    }).catchError((err) {
-      debugPrint('watchStats catchError: $err');
-    });
+    getDocumentStats()
+        .then((stats) {
+          if (!_statsStreamController.isClosed) {
+            _statsStreamController.add(stats);
+          }
+        })
+        .catchError((err) {
+          debugPrint('watchStats catchError: $err');
+        });
     return _statsStreamController.stream;
   }
 
@@ -278,7 +462,9 @@ class AppDatabase {
     } catch (e) {
       debugPrint('getAllDocuments fallback notice: $e');
       return List<Document>.from(
-        _fallbackDocuments.isNotEmpty ? _fallbackDocuments : MockData.getInitialDocuments(),
+        _fallbackDocuments.isNotEmpty
+            ? _fallbackDocuments
+            : MockData.getInitialDocuments(),
       );
     }
   }
@@ -391,6 +577,7 @@ class AppDatabase {
         await _notifyWatchers();
         return 1;
       }
+
       final result = await db.transaction((txn) async {
         await txn.insert(AppTables.tableDeleteLogs, {
           'id': _uuid.v4(),
@@ -489,7 +676,9 @@ class AppDatabase {
           whereClauses.add('is_favorite = 1');
         }
 
-        final String? where = whereClauses.isNotEmpty ? whereClauses.join(' AND ') : null;
+        final String? where = whereClauses.isNotEmpty
+            ? whereClauses.join(' AND ')
+            : null;
 
         final List<Map<String, dynamic>> maps = await db.query(
           AppTables.tableDocuments,
@@ -506,7 +695,9 @@ class AppDatabase {
           list.sort((a, b) => a.dateCreated.compareTo(b.dateCreated));
           break;
         case 'title_asc':
-          list.sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+          list.sort(
+            (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()),
+          );
           break;
         case 'due_date':
           list.sort((a, b) {
@@ -562,7 +753,9 @@ class AppDatabase {
     } catch (e) {
       debugPrint('getAllSubjects fallback notice: $e');
       return List<Subject>.from(
-        _fallbackSubjects.isNotEmpty ? _fallbackSubjects : MockData.initialSubjects,
+        _fallbackSubjects.isNotEmpty
+            ? _fallbackSubjects
+            : MockData.initialSubjects,
       );
     }
   }
@@ -665,24 +858,52 @@ class AppDatabase {
     try {
       final db = await database;
       if (db == null) {
+        final deletedAt = DateTime.now().toIso8601String();
+        final childIds = _fallbackDocuments
+            .where((document) => document.subjectId == id)
+            .map((document) => document.id)
+            .toList();
         _fallbackDeleteLogs.add({
           'id': _uuid.v4(),
           'item_id': id,
           'table_name': AppTables.tableSubjects,
-          'date_deleted': DateTime.now().toIso8601String(),
+          'date_deleted': deletedAt,
         });
+        for (final childId in childIds) {
+          _fallbackDeleteLogs.add({
+            'id': _uuid.v4(),
+            'item_id': childId,
+            'table_name': AppTables.tableDocuments,
+            'date_deleted': deletedAt,
+          });
+        }
         _fallbackDocuments.removeWhere((d) => d.subjectId == id);
         _fallbackSubjects.removeWhere((s) => s.id == id);
         await _notifyWatchers();
         return 1;
       }
       final result = await db.transaction((txn) async {
+        final childDocs = await txn.query(
+          AppTables.tableDocuments,
+          columns: ['id'],
+          where: 'subject_id = ?',
+          whereArgs: [id],
+        );
+        final deletedAt = DateTime.now().toIso8601String();
         await txn.insert(AppTables.tableDeleteLogs, {
           'id': _uuid.v4(),
           'item_id': id,
           'table_name': AppTables.tableSubjects,
-          'date_deleted': DateTime.now().toIso8601String(),
+          'date_deleted': deletedAt,
         });
+        for (final child in childDocs) {
+          await txn.insert(AppTables.tableDeleteLogs, {
+            'id': _uuid.v4(),
+            'item_id': child['id'],
+            'table_name': AppTables.tableDocuments,
+            'date_deleted': deletedAt,
+          });
+        }
 
         await txn.delete(
           AppTables.tableDocuments,
@@ -738,48 +959,65 @@ class AppDatabase {
           'in_progress_count': _fallbackDocuments
               .where((d) => d.status == DocumentStatus.inProgress)
               .length,
-          'favorites_count':
-              _fallbackDocuments.where((d) => d.isFavorite).length,
+          'favorites_count': _fallbackDocuments
+              .where((d) => d.isFavorite)
+              .length,
         };
       }
 
-      final totalDocs = Sqflite.firstIntValue(
-            await db.rawQuery('SELECT COUNT(*) FROM ${AppTables.tableDocuments}'),
-          ) ??
-          0;
-
-      final totalSubjects = Sqflite.firstIntValue(
-            await db.rawQuery('SELECT COUNT(*) FROM ${AppTables.tableSubjects}'),
-          ) ??
-          0;
-
-      final lecturesCount = Sqflite.firstIntValue(
+      final totalDocs =
+          Sqflite.firstIntValue(
             await db.rawQuery(
-                "SELECT COUNT(*) FROM ${AppTables.tableDocuments} WHERE document_type = 'lecture'"),
+              'SELECT COUNT(*) FROM ${AppTables.tableDocuments}',
+            ),
           ) ??
           0;
 
-      final assignmentsCount = Sqflite.firstIntValue(
+      final totalSubjects =
+          Sqflite.firstIntValue(
             await db.rawQuery(
-                "SELECT COUNT(*) FROM ${AppTables.tableDocuments} WHERE document_type = 'assignment'"),
+              'SELECT COUNT(*) FROM ${AppTables.tableSubjects}',
+            ),
           ) ??
           0;
 
-      final completedCount = Sqflite.firstIntValue(
+      final lecturesCount =
+          Sqflite.firstIntValue(
             await db.rawQuery(
-                "SELECT COUNT(*) FROM ${AppTables.tableDocuments} WHERE status = 'completed'"),
+              "SELECT COUNT(*) FROM ${AppTables.tableDocuments} WHERE document_type = 'lecture'",
+            ),
           ) ??
           0;
 
-      final inProgressCount = Sqflite.firstIntValue(
+      final assignmentsCount =
+          Sqflite.firstIntValue(
             await db.rawQuery(
-                "SELECT COUNT(*) FROM ${AppTables.tableDocuments} WHERE status = 'in_progress'"),
+              "SELECT COUNT(*) FROM ${AppTables.tableDocuments} WHERE document_type = 'assignment'",
+            ),
           ) ??
           0;
 
-      final favoritesCount = Sqflite.firstIntValue(
+      final completedCount =
+          Sqflite.firstIntValue(
             await db.rawQuery(
-                "SELECT COUNT(*) FROM ${AppTables.tableDocuments} WHERE is_favorite = 1"),
+              "SELECT COUNT(*) FROM ${AppTables.tableDocuments} WHERE status = 'completed'",
+            ),
+          ) ??
+          0;
+
+      final inProgressCount =
+          Sqflite.firstIntValue(
+            await db.rawQuery(
+              "SELECT COUNT(*) FROM ${AppTables.tableDocuments} WHERE status = 'in_progress'",
+            ),
+          ) ??
+          0;
+
+      final favoritesCount =
+          Sqflite.firstIntValue(
+            await db.rawQuery(
+              "SELECT COUNT(*) FROM ${AppTables.tableDocuments} WHERE is_favorite = 1",
+            ),
           ) ??
           0;
 
@@ -809,8 +1047,7 @@ class AppDatabase {
         'in_progress_count': _fallbackDocuments
             .where((d) => d.status == DocumentStatus.inProgress)
             .length,
-        'favorites_count':
-            _fallbackDocuments.where((d) => d.isFavorite).length,
+        'favorites_count': _fallbackDocuments.where((d) => d.isFavorite).length,
       };
     }
   }
@@ -822,7 +1059,10 @@ class AppDatabase {
       if (db == null) {
         return List<Map<String, dynamic>>.from(_fallbackDeleteLogs);
       }
-      return await db.query(AppTables.tableDeleteLogs, orderBy: 'date_deleted DESC');
+      return await db.query(
+        AppTables.tableDeleteLogs,
+        orderBy: 'date_deleted DESC',
+      );
     } catch (e) {
       debugPrint('getDeleteLogs fallback notice: $e');
       return List<Map<String, dynamic>>.from(_fallbackDeleteLogs);
