@@ -179,26 +179,40 @@ Toàn bộ ảnh chụp màn hình kết quả chạy và kiểm thử ứng d�
 
 ## ☁️ 7. PHÂN TÍCH VÀ LẬP PHƯƠNG ÁN TÍCH HỢP CLOUD CHO HỆ THỐNG QUẢN LÝ TÀI LIỆU (DMS)
 
-> 📌 **Chủ đề nghiên cứu:** Tối ưu hóa Khả năng Lưu trữ, An toàn Bảo mật và Truy cập Từ xa  
+> 📌 **Nhiệm vụ đề bài:**  
+> Phân tích chi tiết các thành phần hiện có của một ứng dụng Quản lý tài liệu (Document Management System - DMS) để xác định khả năng chuyển đổi. Đề xuất một phương án tích hợp điện toán đám mây (Cloud) nhằm tối ưu hóa khả năng lưu trữ, bảo mật và truy cập từ xa. Bài làm thể hiện sự so sánh giữa mô hình truyền thống và mô hình sau khi tích hợp Cloud.  
 > 📑 **Báo cáo kỹ thuật chi tiết:** [`BAO_CAO_TICH_HOP_CLOUD_DMS.docx`](BAO_CAO_TICH_HOP_CLOUD_DMS.docx) | [`BAO_CAO_TICH_HOP_CLOUD_DMS.md`](BAO_CAO_TICH_HOP_CLOUD_DMS.md)  
 > 📊 **Slide thuyết trình báo cáo:** [`Slide_Tich_Hop_Cloud_Firebase_DMS.pptx`](Slide_Tich_Hop_Cloud_Firebase_DMS.pptx)  
-> 👥 **Đơn vị thực hiện:** **Nhóm 16** (Lớp 65KTPM — Đại học Thủy Lợi)
+> 👥 **Đơn vị thực hiện:** **Nhóm 16** (Lớp 65KTPM — Khoa CNTT — Đại học Thủy Lợi)
 
 ### 📋 7.1. Bảng Đối Soát Hoàn Thành Checklist 7 Mục Theo Yêu Cầu
 
 | STT | Mục Checklist Yêu Cầu | Kết Quả Triển Khai Trong Dự Án & Báo Cáo | Trạng Thái |
 |:---:|:---|:---|:---:|
-| **1** | **Phân tích các thành phần cốt lõi của ứng dụng Quản lý tài liệu** | Phân tích chi tiết 4 phân hệ: **Frontend** (Flutter Multiplatform / Web SPA), **Backend** (Stateless RESTful API), **Metadata Database** (RDBMS: PostgreSQL/SQLite), **File Storage** (Lưu trữ tệp nhị phân). Đánh giá tính sẵn sàng chuyển đổi Cloud đạt 85-95%. | ✅ Hoàn thành 100% |
+| **1** | **Liệt kê và phân tích các thành phần cốt lõi của ứng dụng Quản lý tài liệu** | Phân tích chi tiết 4 phân hệ: **Frontend** (Flutter Multiplatform / Web SPA), **Backend** (Stateless RESTful API), **Metadata Database** (RDBMS: PostgreSQL/SQLite), **File Storage** (Lưu trữ tệp nhị phân). Đánh giá tính sẵn sàng chuyển đổi Cloud đạt 85-95%. | ✅ Hoàn thành 100% |
 | **2** | **Xác định các điểm nghẽn & hạn chế trên hạ tầng truyền thống** | Chỉ rõ 5 điểm nghẽn nghiêm trọng: Giới hạn dung lượng & nghẽn I/O đĩa cứng (Disk Bottleneck), Khó khăn khi mở rộng (Scale-up trần vật lý), Điểm chết đơn lẻ (SPOF) & VPN truy cập từ xa cồng kềnh, Rủi ro Thảm họa/Ransomware (RPO/RTO lớn), Gánh nặng chi phí CapEx/OpEx. | ✅ Hoàn thành 100% |
 | **3** | **Lựa chọn mô hình Cloud phù hợp & dịch vụ cụ thể** | So sánh đa tiêu chí giữa Public, Private và Hybrid Cloud. Luận cứ lựa chọn **Public Cloud** với hệ sinh thái **AWS S3 / Google Cloud Storage** nhờ độ bền 11 số 9 (99.999999999%), mạng phân phối toàn cầu CDN, chi phí Pay-As-You-Go linh hoạt. | ✅ Hoàn thành 100% |
 | **4** | **Thiết kế sơ đồ kiến trúc Cloud & mô tả luồng dữ liệu** | Xây dựng sơ đồ kiến trúc tổng thể [`scripts/output/cloud_dms_architecture.png`](scripts/output/cloud_dms_architecture.png) và quy trình **Direct Upload Pattern** bypass Backend API; xử lý phi đồng bộ qua Event-Driven (S3 Event -> SQS -> Lambda/Cloud Function sinh Thumbnail/OCR). | ✅ Hoàn thành 100% |
 | **5** | **Đánh giá tác động về Bảo mật, Chi phí và Hiệu suất** | • **Bảo mật:** Mã hóa At-Rest (SSE-KMS AES-256) & In-Transit (TLS 1.3), Pre-signed URL có thời hạn, chống ransomware với Object Lock.<br>• **Chi phí:** Chuyển đổi CapEx sang OpEx, tự động hóa vòng đời dữ liệu S3 Lifecycle Rules tiết kiệm 70-90% chi phí lưu trữ dài hạn.<br>• **Hiệu suất:** Tốc độ tải vượt trội qua CloudFront CDN Edge Caching, giảm 75% độ trễ mạng. | ✅ Hoàn thành 100% |
 | **6** | **Tích hợp Firebase: Google Sign-In & Cloud Storage cho Flutter** | Nghiên cứu và chuẩn hóa giải pháp tích hợp Firebase theo tài liệu chính thức [Firebase Flutter Setup](https://firebase.google.com/docs/flutter/setup?hl=vi): Xác thực một chạm OAuth 2.0 bằng Google Sign-In (`firebase_auth`, `google_sign_in`) và lưu trữ tệp tin trên `firebase_storage` với cơ chế Resumable Upload và Security Rules phân quyền. | ✅ Hoàn thành 100% |
-| **7** | **Slide báo cáo & Bảng phân chia công việc bài tập tiếp theo** | Thiết kế bộ Slide thuyết trình 11 trang chuẩn 16:9 [`Slide_Tich_Hop_Cloud_Firebase_DMS.pptx`](Slide_Tich_Hop_Cloud_Firebase_DMS.pptx), cập nhật tài liệu README.MD và thiết lập kế hoạch phân công công việc cụ thể cho 4 thành viên. | ✅ Hoàn thành 100% |
+| **7** | **Slide báo cáo & Bảng phân chia công việc nhóm** | Thiết kế bộ Slide thuyết trình 11 trang chuẩn 16:9 [`Slide_Tich_Hop_Cloud_Firebase_DMS.pptx`](Slide_Tich_Hop_Cloud_Firebase_DMS.pptx), cập nhật tài liệu README.MD và phân công chi tiết công việc cho cả phần Báo cáo phân tích và phần Lập trình tích hợp tiếp theo. | ✅ Hoàn thành 100% |
 
 ---
 
-### 🔥 7.2. Tìm Hiểu Giải Pháp Firebase (Google Sign-In & Cloud Storage)
+### 👥 7.2. Bảng Phân Chia Công Việc: Bài Tập Phân Tích & Lập Phương Án Tích Hợp Cloud DMS
+
+Nhóm 16 đã phân công cụ thể từng đầu việc cho 4 thành viên để hoàn thành toàn bộ bài tập phân tích kiến trúc và đề xuất phương án:
+
+| STT | Thành Viên | Vai Trò | Nhiệm Vụ Phân Tích & Xây Dựng Báo Cáo | Sản Phẩm Bàn Giao | Trạng Thái |
+|:---:|:---|:---:|:---|:---|:---:|
+| **1** | **Nguyễn Văn Huỳnh** | **Nhóm trưởng** | • Chủ trì nghiên cứu kiến trúc tổng thể DMS.<br>• Thiết kế Sơ đồ kiến trúc Cloud tích hợp (AWS & Firebase) và quy trình luồng dữ liệu Direct Upload Pattern.<br>• So sánh các mô hình Public, Private, Hybrid Cloud và lựa chọn dịch vụ Object Storage.<br>• Tổng hợp, hiệu đính và xuất bản tệp báo cáo kỹ thuật [`BAO_CAO_TICH_HOP_CLOUD_DMS.docx`](BAO_CAO_TICH_HOP_CLOUD_DMS.docx) và Markdown. | Sơ đồ kiến trúc, Báo cáo DOCX & MD, Quản trị Git | ✅ Đã hoàn thành |
+| **2** | **Lê Anh Tuấn** | **Thành viên** | • Liệt kê và phân tích chi tiết 4 thành phần cốt lõi của ứng dụng Quản lý tài liệu (Frontend, Backend, Database, File Storage).<br>• Đánh giá tính sẵn sàng chuyển đổi Cloud (Cloud-readiness) của từng thành phần.<br>• So sánh các nền tảng Cloud Storage hàng đầu: Amazon S3, Google Cloud Storage, Azure Blob Storage.<br>• Soạn thảo nội dung mục 1 và mục 3 trong báo cáo. | Nội dung phân tích thành phần & bảng so sánh dịch vụ | ✅ Đã hoàn thành |
+| **3** | **NGUYỄN TRUNG KIÊN** | **Thành viên** | • Khảo sát và chỉ ra 5 điểm nghẽn nghiêm trọng của hệ thống DMS khi vận hành trên hạ tầng On-Premises truyền thống.<br>• Thiết kế toàn bộ Slide thuyết trình 11 trang chuẩn 16:9 [`Slide_Tich_Hop_Cloud_Firebase_DMS.pptx`](Slide_Tich_Hop_Cloud_Firebase_DMS.pptx).<br>• Trực quan hóa bảng đối chiếu 8 tiêu chí so sánh giữa mô hình Truyền thống và mô hình Cloud. | Bộ Slide thuyết trình PPTX, Phân tích 5 điểm nghẽn | ✅ Đã hoàn thành |
+| **4** | **Trần Anh Tuấn** | **Thành viên** | • Đánh giá chuyên sâu 3 trụ cột tác động sau chuyển đổi: An toàn Bảo mật, Chi phí vận hành (TCO 3 năm) và Hiệu suất.<br>• Xây dựng biểu đồ phân tích bài toán tài chính TCO và tính toán tỷ lệ tiết kiệm chi phí lưu trữ theo vòng đời (S3 Lifecycle).<br>• Phác thảo lộ trình chuyển đổi 5 giai đoạn (Migration Roadmap). | Phân tích TCO, Biểu đồ chi phí, Lộ trình 5 bước | ✅ Đã hoàn thành |
+
+---
+
+### 🔥 7.3. Tìm Hiểu Giải Pháp Firebase (Google Sign-In & Cloud Storage)
 
 Theo tài liệu chính thức của Google tại [https://firebase.google.com/docs/flutter/setup?hl=vi](https://firebase.google.com/docs/flutter/setup?hl=vi), giải pháp Firebase đem lại khả năng tích hợp vượt trội cho ứng dụng Flutter:
 
@@ -257,7 +271,7 @@ flowchart TD
 
 ---
 
-### 👥 7.3. Kế Hoạch & Bảng Phân Chia Công Việc Bài Tập Tiếp Theo
+### 🚀 7.4. Kế Hoạch & Bảng Phân Chia Công Việc Lập Trình Bài Tập Tiếp Theo
 
 Nhóm 16 thống nhất quy trình Git Flow: Mỗi thành viên tạo nhánh riêng `<tiền_tố>-<tên_chức_năng>`, hoàn thiện và tạo Pull Request (PR) để Nhóm trưởng review trước khi merge vào `main`.
 
@@ -269,6 +283,7 @@ Nhóm 16 thống nhất quy trình Git Flow: Mỗi thành viên tạo nhánh ri�
 | **4** | **Trần Anh Tuấn** | **Thành viên** | • Xây dựng cơ chế Local Cache kết hợp Cloud: Lưu trữ cục bộ khi Offline.<br>• Tự động đồng bộ tài liệu hai chiều khi kết nối mạng được phục hồi.<br>• Kiểm tra tính toàn vẹn tệp (Checksum MD5/SHA-256) và cập nhật bảng `delete_logs`.<br>• Kiểm thử hiệu năng truyền tải tệp khi mạng yếu. | Cơ chế Offline-First Cache, đồng bộ dữ liệu hai chiều | `trantuan-offline-sync` |
 
 ---
+
 
 # 📖 TÀI LIỆU GỐC DỰ ÁN CASHEW (ORIGINAL CASHEW DOCUMENTATION)
 
