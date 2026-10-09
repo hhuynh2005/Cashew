@@ -15,11 +15,7 @@ void main() async {
 
   // Khởi tạo Database singleton theo kiến trúc Cashew (Local-first)
   final appDb = AppDatabase.instance;
-  try {
-    await appDb.database;
-  } catch (e) {
-    debugPrint('Database initialization warning: $e');
-  }
+  await appDb.database;
 
   CloudSyncService? cloudSync;
   try {

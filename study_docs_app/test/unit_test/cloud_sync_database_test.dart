@@ -42,6 +42,47 @@ void main() {
       },
     );
 
+    test('local delete removes the row and persists its tombstone', () async {
+      final document = Document(
+        id: 'local-delete-test',
+        title: 'Local delete test',
+        subjectId: 'subj_cse441',
+        documentType: DocumentType.note,
+      );
+      await database.insertDocument(document);
+
+      await database.deleteDocument(document.id);
+
+      expect(await database.getDocumentById(document.id), isNull);
+      expect(
+        (await database.getDeleteLogs()).any(
+          (log) =>
+              log['table_name'] == AppTables.tableDocuments &&
+              log['item_id'] == document.id,
+        ),
+        isTrue,
+      );
+    });
+
+    test(
+      'reset restores defaults without losing transaction support',
+      () async {
+        final document = Document(
+          id: 'reset-test-document',
+          title: 'Temporary document',
+          subjectId: 'subj_cse441',
+          documentType: DocumentType.note,
+        );
+        await database.insertDocument(document);
+
+        await database.resetToDefault();
+
+        expect(await database.getDocumentById(document.id), isNull);
+        expect(await database.getAllDocuments(), isNotEmpty);
+        expect(await database.getAllSubjects(), isNotEmpty);
+      },
+    );
+
     test('stale tombstone does not remove a newer local edit', () async {
       final document = Document(
         id: 'sync-stale-delete-test',
