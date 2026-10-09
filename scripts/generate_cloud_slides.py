@@ -485,7 +485,7 @@ def create_presentation():
     add_header(slide9, "7. QUY TRÌNH THIẾT LẬP FIREBASE VỚI TÀI KHOẢN NHÓM")
 
     steps_setup = [
-        ("BƯỚC 1: KHỞI TẠO DỰ ÁN", "Tạo Project Console", "• Truy cập console.firebase.google.com bằng tài khoản nhóm.\n• Tạo dự án mới cashew-study-docs.\n• Bật Google Analytics (tùy chọn)."),
+        ("BƯỚC 1: KHỞI TẠO DỰ ÁN", "Tạo Project Console", "• Truy cập console.firebase.google.com bằng tài khoản nhóm.\n• Tạo dự án mới cashew-study-docs-d5b15.\n• Bật Google Analytics (tùy chọn)."),
         ("BƯỚC 2: CÀI ĐẶT CLI", "Firebase CLI & FlutterFire", "• Cài đặt Firebase Tools: npm install -g firebase-tools.\n• Đăng nhập: firebase login.\n• Kích hoạt: dart pub global activate flutterfire_cli."),
         ("BƯỚC 3: CẤU HÌNH TỰ ĐỘNG", "Sinh tệp firebase_options", "• Tại thư mục app, chạy lệnh: flutterfire configure.\n• Tự động đăng ký app Android, iOS, Web và sinh mã lib/firebase_options.dart."),
         ("BƯỚC 4: THÊM DEPENDENCIES", "Cài đặt gói trong pubspec", "• Thêm vào pubspec.yaml:\nfirebase_core: ^3.6.0\nfirebase_auth: ^5.3.1\ngoogle_sign_in: ^6.2.1\nfirebase_storage: ^12.3.2"),
