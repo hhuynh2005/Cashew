@@ -5,6 +5,9 @@ import '../functions.dart';
 import '../struct/document_enums.dart';
 import '../struct/document_model.dart';
 import '../struct/document_state_provider.dart';
+import '../theme.dart';
+import '../widgets/cloud_sync_badge.dart';
+import '../widgets/cloud_transfer_progress.dart';
 import '../widgets/confirm_dialog.dart';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -263,6 +266,16 @@ class DocumentDetailPage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Column(
                 children: [
+                  _buildDetailWidgetRow(
+                    context,
+                    icon: document.cloudSyncStatus.icon,
+                    iconColor: document.cloudSyncStatus.color,
+                    label: 'Đồng bộ Đám mây Cloud',
+                    trailing: CloudSyncBadge(
+                      status: document.cloudSyncStatus,
+                    ),
+                  ),
+                  const Divider(height: 1),
                   _buildDetailRow(
                     context,
                     icon: document.documentType.icon,
@@ -360,6 +373,113 @@ class DocumentDetailPage extends StatelessWidget {
                 ),
               ),
             ),
+          // 4.1 Thao tác truyền tải Cloud Storage (Nguyễn Trung Kiên)
+          Card(
+            elevation: 1,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.cloud_sync_rounded, color: AppTheme.primaryColor, size: 20),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Truyền tải Cloud Storage (Firebase)',
+                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                      ),
+                      const Spacer(),
+                      CloudSyncBadge(status: document.cloudSyncStatus),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Vị trí lưu trữ: gs://cashew-study-docs.appspot.com/docs/\nKhu vực: asia-southeast1 (Singapore) • Kiểm tra toàn vẹn Checksum MD5.',
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      color: isDark ? Colors.white60 : Colors.black54,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          icon: const Icon(Icons.cloud_download_rounded, size: 18),
+                          label: const Text('Tải về máy'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFF0288D1),
+                            side: const BorderSide(color: Color(0xFF0288D1)),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                          onPressed: () async {
+                            final success = await CloudTransferProgress.showTransferSheet(
+                              context: context,
+                              type: TransferType.download,
+                              fileName: '${document.title}.${document.fileFormat.name}',
+                              totalBytes: document.fileSizeBytes > 0
+                                  ? document.fileSizeBytes
+                                  : 2 * 1024 * 1024,
+                              fileFormat: document.fileFormat,
+                            );
+                            if (success && context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  backgroundColor: Color(0xFF0288D1),
+                                  content: Text('Đã tải tài liệu về bộ nhớ ngoại tuyến thành công!'),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: FilledButton.icon(
+                          icon: const Icon(Icons.cloud_upload_rounded, size: 18),
+                          label: const Text('Đồng bộ Cloud'),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: AppTheme.primaryColor,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                          onPressed: () async {
+                            final success = await CloudTransferProgress.showTransferSheet(
+                              context: context,
+                              type: TransferType.upload,
+                              fileName: '${document.title}.${document.fileFormat.name}',
+                              totalBytes: document.fileSizeBytes > 0
+                                  ? document.fileSizeBytes
+                                  : 3 * 1024 * 1024,
+                              fileFormat: document.fileFormat,
+                            );
+                            if (success && context.mounted) {
+                              await provider.updateDocument(
+                                document.copyWith(
+                                  fileUrl:
+                                      'https://firebasestorage.googleapis.com/v0/b/cashew-study-docs.appspot.com/o/${Uri.encodeComponent(document.title)}?alt=media',
+                                  cloudSyncStatus: CloudSyncStatus.synced,
+                                ),
+                              );
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    backgroundColor: AppTheme.primaryColor,
+                                    content: Text('Đã đồng bộ tài liệu lên Firebase Cloud Storage!'),
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
           const SizedBox(height: 16),
 
           // 5. Firebase Cloud Storage Card
@@ -424,6 +544,27 @@ class DocumentDetailPage extends StatelessWidget {
           Text(label, style: const TextStyle(fontSize: 13, color: Colors.grey)),
           const Spacer(),
           Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailWidgetRow(
+    BuildContext context, {
+    required IconData icon,
+    required Color iconColor,
+    required String label,
+    required Widget trailing,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        children: [
+          Icon(icon, color: iconColor, size: 20),
+          const SizedBox(width: 12),
+          Text(label, style: const TextStyle(fontSize: 13, color: Colors.grey)),
+          const Spacer(),
+          trailing,
         ],
       ),
     );
@@ -707,4 +848,3 @@ class _CloudStorageCardState extends State<_CloudStorageCard> {
     );
   }
 }
-
