@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../struct/document_enums.dart';
 import '../struct/document_state_provider.dart';
 import '../widgets/confirm_dialog.dart';
+import '../widgets/cloud_sync_panel.dart';
 import '../widgets/document_card.dart';
 import '../widgets/empty_state_view.dart';
 import '../widgets/filter_chip_bar.dart';
@@ -24,8 +25,28 @@ class HomeDashboardPage extends StatefulWidget {
   State<HomeDashboardPage> createState() => _HomeDashboardPageState();
 }
 
-class _HomeDashboardPageState extends State<HomeDashboardPage> {
+class _HomeDashboardPageState extends State<HomeDashboardPage>
+    with WidgetsBindingObserver {
   int _navIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      context.read<DocumentStateProvider>().handleAppResumed();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +82,9 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
                   'Kiến trúc Cashew • Local-First',
                   style: TextStyle(
                     fontSize: 11,
-                    color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7),
+                    color: theme.textTheme.bodySmall?.color?.withValues(
+                      alpha: 0.7,
+                    ),
                     fontWeight: FontWeight.normal,
                   ),
                 ),
@@ -109,14 +132,16 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
                   await provider.resetToDefault();
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Đã khôi phục dữ liệu mẫu thành công!')),
+                      const SnackBar(
+                        content: Text('Đã khôi phục dữ liệu mẫu thành công!'),
+                      ),
                     );
                   }
                 }
               } else if (value == 'about') {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const AboutAppPage()),
-                );
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (_) => const AboutAppPage()));
               }
             },
             itemBuilder: (ctx) => [
@@ -162,6 +187,14 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
               },
               child: CustomScrollView(
                 slivers: [
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                      child: CloudSyncPanel(
+                        key: const ValueKey('cloud-sync-panel'),
+                      ),
+                    ),
+                  ),
                   // 1. Thẻ chào mừng sinh viên & môn học
                   SliverToBoxAdapter(
                     child: Padding(
@@ -171,15 +204,22 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: isDark
-                                ? [const Color(0xFF004D40), const Color(0xFF00796B)]
-                                : [const Color(0xFF00796B), const Color(0xFF26A69A)],
+                                ? [
+                                    const Color(0xFF004D40),
+                                    const Color(0xFF00796B),
+                                  ]
+                                : [
+                                    const Color(0xFF00796B),
+                                    const Color(0xFF26A69A),
+                                  ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF00796B).withValues(alpha: 0.25),
+                              color: const Color(0xFF00796B)
+                                  .withValues(alpha: 0.25),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
@@ -200,7 +240,10 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
                                   ),
                                 ),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 3,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: Colors.white24,
                                     borderRadius: BorderRadius.circular(12),
@@ -249,7 +292,8 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
                             children: [
                               StatSummaryCard(
                                 title: 'Tổng tài liệu',
-                                value: '${provider.stats['total_documents'] ?? 0}',
+                                value:
+                                    '${provider.stats['total_documents'] ?? 0}',
                                 icon: Icons.folder_rounded,
                                 color: theme.colorScheme.primary,
                                 onTap: () {
@@ -259,11 +303,14 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
                               const SizedBox(width: 10),
                               StatSummaryCard(
                                 title: 'Bài tập / Đồ án',
-                                value: '${provider.stats['assignments_count'] ?? 0}',
+                                value:
+                                    '${provider.stats['assignments_count'] ?? 0}',
                                 icon: Icons.assignment_rounded,
                                 color: const Color(0xFFFB8C00),
                                 onTap: () {
-                                  provider.setSelectedType(DocumentType.assignment);
+                                  provider.setSelectedType(
+                                    DocumentType.assignment,
+                                  );
                                 },
                               ),
                             ],
@@ -273,21 +320,27 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
                             children: [
                               StatSummaryCard(
                                 title: 'Bài giảng / Slide',
-                                value: '${provider.stats['lectures_count'] ?? 0}',
+                                value:
+                                    '${provider.stats['lectures_count'] ?? 0}',
                                 icon: Icons.menu_book_rounded,
                                 color: const Color(0xFF1E88E5),
                                 onTap: () {
-                                  provider.setSelectedType(DocumentType.lecture);
+                                  provider.setSelectedType(
+                                    DocumentType.lecture,
+                                  );
                                 },
                               ),
                               const SizedBox(width: 10),
                               StatSummaryCard(
                                 title: 'Đã hoàn thành',
-                                value: '${provider.stats['completed_count'] ?? 0}',
+                                value:
+                                    '${provider.stats['completed_count'] ?? 0}',
                                 icon: Icons.check_circle_rounded,
                                 color: const Color(0xFF43A047),
                                 onTap: () {
-                                  provider.setSelectedStatus(DocumentStatus.completed);
+                                  provider.setSelectedStatus(
+                                    DocumentStatus.completed,
+                                  );
                                 },
                               ),
                             ],
@@ -306,12 +359,17 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
                         children: [
                           const Text(
                             'Môn Học',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           TextButton(
                             onPressed: () {
                               Navigator.of(context).push(
-                                MaterialPageRoute(builder: (_) => const SubjectsManagePage()),
+                                MaterialPageRoute(
+                                  builder: (_) => const SubjectsManagePage(),
+                                ),
                               );
                             },
                             child: const Text('Quản lý'),
@@ -330,14 +388,19 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
                         itemCount: provider.subjects.length,
                         itemBuilder: (ctx, index) {
                           final subject = provider.subjects[index];
-                          final isSelected = provider.selectedSubjectId == subject.id;
-                          final docCount = provider.getDocumentCountBySubject(subject.id);
+                          final isSelected =
+                              provider.selectedSubjectId == subject.id;
+                          final docCount = provider.getDocumentCountBySubject(
+                            subject.id,
+                          );
 
                           return Padding(
                             padding: const EdgeInsets.only(right: 10),
                             child: InkWell(
                               onTap: () {
-                                provider.setSelectedSubject(isSelected ? null : subject.id);
+                                provider.setSelectedSubject(
+                                  isSelected ? null : subject.id,
+                                );
                               },
                               borderRadius: BorderRadius.circular(14),
                               child: Container(
@@ -346,12 +409,16 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
                                 decoration: BoxDecoration(
                                   color: isSelected
                                       ? subject.color.withValues(alpha: 0.18)
-                                      : (isDark ? const Color(0xFF1E1E1E) : Colors.white),
+                                      : (isDark
+                                            ? const Color(0xFF1E1E1E)
+                                            : Colors.white),
                                   borderRadius: BorderRadius.circular(14),
                                   border: Border.all(
                                     color: isSelected
                                         ? subject.color
-                                        : (isDark ? Colors.white12 : Colors.grey.shade200),
+                                        : (isDark
+                                              ? Colors.white12
+                                              : Colors.grey.shade200),
                                     width: isSelected ? 1.8 : 1,
                                   ),
                                 ),
@@ -361,7 +428,11 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
                                   children: [
                                     Row(
                                       children: [
-                                        Icon(subject.iconData, color: subject.color, size: 16),
+                                        Icon(
+                                          subject.iconData,
+                                          color: subject.color,
+                                          size: 16,
+                                        ),
                                         const SizedBox(width: 6),
                                         Text(
                                           subject.code,
@@ -387,7 +458,8 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
                                       '$docCount tài liệu',
                                       style: TextStyle(
                                         fontSize: 10,
-                                        color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7),
+                                        color: theme.textTheme.bodySmall?.color
+                                            ?.withValues(alpha: 0.7),
                                       ),
                                     ),
                                   ],
@@ -419,7 +491,10 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
                             provider.selectedSubjectId != null
                                 ? 'Tài liệu: ${provider.getSubjectById(provider.selectedSubjectId!)?.name ?? ""}'
                                 : 'Tài Liệu Học Tập (${provider.filteredDocuments.length})',
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           if (provider.selectedSubjectId != null ||
                               provider.selectedType != null ||
@@ -427,7 +502,10 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
                               provider.showFavoritesOnly)
                             TextButton.icon(
                               onPressed: () => provider.clearFilters(),
-                              icon: const Icon(Icons.clear_all_rounded, size: 16),
+                              icon: const Icon(
+                                Icons.clear_all_rounded,
+                                size: 16,
+                              ),
                               label: const Text('Bỏ lọc'),
                             ),
                         ],
@@ -456,27 +534,23 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
                     )
                   else
                     SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (ctx, index) {
-                          final doc = provider.filteredDocuments[index];
-                          return DocumentCard(
-                            document: doc,
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => DocumentDetailPage(documentId: doc.id),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                        childCount: provider.filteredDocuments.length,
-                      ),
+                      delegate: SliverChildBuilderDelegate((ctx, index) {
+                        final doc = provider.filteredDocuments[index];
+                        return DocumentCard(
+                          document: doc,
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    DocumentDetailPage(documentId: doc.id),
+                              ),
+                            );
+                          },
+                        );
+                      }, childCount: provider.filteredDocuments.length),
                     ),
 
-                  const SliverToBoxAdapter(
-                    child: SizedBox(height: 80),
-                  ),
+                  const SliverToBoxAdapter(child: SizedBox(height: 80)),
                 ],
               ),
             ),
@@ -497,17 +571,16 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
         selectedIndex: _navIndex,
         onDestinationSelected: (idx) {
           if (idx == 1) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const DocumentListPage()),
-            );
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const DocumentListPage()));
           } else if (idx == 2) {
             Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const SubjectsManagePage()),
             );
           } else if (idx == 3) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const AboutAppPage()),
-            );
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (_) => const AboutAppPage()));
           } else {
             setState(() => _navIndex = idx);
           }

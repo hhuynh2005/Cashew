@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "825188339992",
+    "project_id": "cashew-study-docs-d5b15",
+    "storage_bucket": "cashew-study-docs-d5b15.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:825188339992:android:e98c772c997059cc3a0e6d",
+        "android_client_info": {
+          "package_name": "com.budget.tracker_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "825188339992-1ajdk8t54m6qt2dt6fbjdmsski82tg66.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCyNMrtBDC24tM03NwYcrXr2PMjSlr91do"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "825188339992-1ajdk8t54m6qt2dt6fbjdmsski82tg66.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "825188339992-8nou72jj364ftq33m6jtena7114u9goh.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.budget.tracker-app"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:825188339992:android:e6605e14dd2778a83a0e6d",
+        "android_client_info": {
+          "package_name": "vn.edu.tlu.study_docs_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "825188339992-1ajdk8t54m6qt2dt6fbjdmsski82tg66.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCyNMrtBDC24tM03NwYcrXr2PMjSlr91do"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "825188339992-1ajdk8t54m6qt2dt6fbjdmsski82tg66.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "825188339992-8nou72jj364ftq33m6jtena7114u9goh.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.budget.tracker-app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

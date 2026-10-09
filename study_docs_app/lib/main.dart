@@ -1,10 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'database/app_database.dart';
 import 'firebase_options.dart';
 import 'pages/home_dashboard_page.dart';
+import 'struct/cloud_sync_service.dart';
 import 'struct/document_repository.dart';
 import 'struct/document_state_provider.dart';
 import 'theme.dart';
@@ -12,7 +14,7 @@ import 'theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Khởi tạo Firebase Authentication cho hệ thống Cloud DMS
+  // Khởi tạo Firebase cho hệ thống Cloud DMS
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
@@ -23,10 +25,13 @@ void main() async {
 
   // Khởi tạo Database singleton theo kiến trúc Cashew (Local-first)
   final appDb = AppDatabase.instance;
+  await appDb.database;
+
+  CloudSyncService? cloudSync;
   try {
-    await appDb.database;
+    cloudSync = CloudSyncService(database: appDb);
   } catch (e) {
-    debugPrint('Database initialization warning: $e');
+    debugPrint('CloudSyncService initialization warning: $e');
   }
 
   // Khởi tạo Repository chứa logic nghiệp vụ
@@ -36,7 +41,10 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => DocumentStateProvider(repository: repository),
+          create: (_) => DocumentStateProvider(
+            repository: repository,
+            cloudSync: cloudSync,
+          ),
         ),
       ],
       child: const StudyDocsCashewApp(),

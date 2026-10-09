@@ -85,12 +85,25 @@ class DocumentDetailPage extends StatelessWidget {
               );
 
               if (confirm && context.mounted) {
-                await provider.deleteDocument(document.id);
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Đã xóa tài liệu thành công!')),
-                  );
-                  Navigator.of(context).pop();
+                try {
+                  await provider.deleteDocument(document.id);
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Đã xóa tài liệu thành công!'),
+                      ),
+                    );
+                    Navigator.of(context).pop();
+                  }
+                } catch (error) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Không thể xóa tài liệu: $error'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
                 }
               }
             },
