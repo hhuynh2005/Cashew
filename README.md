@@ -64,7 +64,7 @@ flowchart TD
 #### Các Bước Setup Chuẩn Hóa Với Tài Khoản Nhóm 16:
 1. **Bước 1: Khởi tạo Project trên Firebase Console**
    - Đăng nhập [Firebase Console](https://console.firebase.google.com/) bằng tài khoản của nhóm.
-   - Chọn **Add project** -> Đặt tên dự án: `cashew-study-docs` -> Bật Google Analytics.
+   - Chọn **Add project** -> Đặt tên dự án: `cashew-study-docs` (Firebase sinh Project ID duy nhất: `cashew-study-docs-d5b15`) -> Bật Google Analytics.
 2. **Bước 2: Cài đặt công cụ dòng lệnh (CLI)**
    ```bash
    npm install -g firebase-tools
@@ -73,8 +73,9 @@ flowchart TD
    ```
 3. **Bước 3: Cấu hình tự động ứng dụng Flutter với FlutterFire**
    ```bash
-   # Đứng tại thư mục ứng dụng Flutter
-   flutterfire configure --project=cashew-study-docs
+   # Đứng tại thư mục ứng dụng Flutter (study_docs_app)
+   cd study_docs_app
+   flutterfire configure --project=cashew-study-docs-d5b15 --platforms=android,web
    ```
    *Lệnh này sẽ tự động đăng ký ứng dụng Android, iOS, Web và sinh mã khởi tạo `lib/firebase_options.dart`.*
 4. **Bước 4: Bổ sung dependencies vào `pubspec.yaml`**
